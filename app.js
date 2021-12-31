@@ -24,7 +24,8 @@ class UI {
       <td>${contact.lastName}</td>
       <td>${contact.email}</td>
       <td>${contact.phone}</td>
-      <td><i class="bi bi-trash btn btn-primary btn-xs delete"></i></a><i class="btn btn-xs btn-info bi bi-pencil edit"></i></td>
+      <td><i id="btn-delete" class="bi bi-trash btn btn-primary btn-xs delete"></i>
+      </td>
       `;
     list.appendChild(row);
   }
@@ -115,5 +116,5 @@ document.getElementById("contact-list").addEventListener("click", (event) => {
   UI.deleteContact(event.target);
   UI.showAlert("Contact Deleted!", "danger");
   //getting the phone from the store and removing whole object from storage
-  Store.removeContact(event.target.parentElement.previousElementSibling.innerText)
+  Store.removeContact(event.target.parentElement.previousElementSibling.textContent)
 });
