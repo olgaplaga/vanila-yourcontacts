@@ -16,15 +16,29 @@ class UI {
     contacts.forEach((contact) => UI.addContactToList(contact));
   }
 
+  // see: https://gist.github.com/jsmithdev/1f31f9f3912d40f6b60bdc7e8098ee9f
+  static id() {
+    let dt = new Date().getTime()
+    
+    const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = (dt + Math.random()*16)%16 | 0
+        dt = Math.floor(dt/16)
+        return (c=='x' ? r :(r&0x3|0x8)).toString(16)
+    })
+    
+    return uuid
+  }
+
   static addContactToList(contact) {
     const list = document.getElementById("contact-list");
     const row = document.createElement("tr");
+    // TODO: use contact.id instead of contact.phone
     row.innerHTML = `
       <td>${contact.firstName}</td>
       <td>${contact.lastName}</td>
       <td>${contact.email}</td>
       <td>${contact.phone}</td>
-      <td><i id="btn-delete" class="bi bi-trash btn btn-primary btn-xs delete"></i>
+      <td><i id="btn-delete-${contact.phone}" class="bi bi-trash btn btn-primary btn-xs delete"></i>
       </td>
       `;
     list.appendChild(row);
@@ -38,9 +52,7 @@ class UI {
   }
 
   static deleteContact(element) {
-    if (element.classList.contains("delete")) {
-      element.parentElement.parentElement.remove();
-    }
+    element.parentElement.parentElement.remove();
   }
 
   static showAlert(message, className) {
@@ -113,8 +125,10 @@ document.querySelector(".contact-form").addEventListener("submit", (event) => {
 
 //Delete Button Functionality
 document.getElementById("contact-list").addEventListener("click", (event) => {
-  UI.deleteContact(event.target);
-  UI.showAlert("Contact Deleted!", "danger");
-  //getting the phone from the store and removing whole object from storage
-  Store.removeContact(event.target.parentElement.previousElementSibling.textContent)
-});
+  if (event.target.id && event.target.id.indexOf('btn-delete-') === 0) {
+    UI.deleteContact(event.target);
+    UI.showAlert("Contact Deleted!", "danger");
+    //getting the phone from the store and removing whole object from storage
+    Store.removeContact(event.target.parentElement.previousElementSibling.textContent)
+  }
+})
