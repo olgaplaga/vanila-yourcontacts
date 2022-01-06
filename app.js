@@ -1,3 +1,5 @@
+let selectedRow = null;
+
 //Contact class
 class Contacts {
   constructor(firstName, lastName, email, phone) {
@@ -11,22 +13,24 @@ class Contacts {
 //UI class
 class UI {
   static displayContacts() {
-    
     const contacts = Store.getContacts();
     contacts.forEach((contact) => UI.addContactToList(contact));
   }
 
   // see: https://gist.github.com/jsmithdev/1f31f9f3912d40f6b60bdc7e8098ee9f
   static id() {
-    let dt = new Date().getTime()
-    
-    const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        const r = (dt + Math.random()*16)%16 | 0
-        dt = Math.floor(dt/16)
-        return (c=='x' ? r :(r&0x3|0x8)).toString(16)
-    })
-    
-    return uuid
+    let dt = new Date().getTime();
+
+    const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+      /[xy]/g,
+      function (c) {
+        const r = (dt + Math.random() * 16) % 16 | 0;
+        dt = Math.floor(dt / 16);
+        return (c == "x" ? r : (r & 0x3) | 0x8).toString(16);
+      }
+    );
+
+    return uuid;
   }
 
   static addContactToList(contact) {
@@ -39,9 +43,25 @@ class UI {
       <td>${contact.email}</td>
       <td>${contact.phone}</td>
       <td><i id="btn-delete-${contact.phone}" class="bi bi-trash btn btn-primary btn-xs delete"></i>
+      <i id="btn-edit" class="bi bi-pencil btn btn-secondary btn-xs edit"></i>
       </td>
       `;
     list.appendChild(row);
+  }
+
+  // static editContactList(contact) {
+  //   selectedRow.children[0].textContent = contact.title;
+  //   selectedRow.children[1].textContent = contact.author;
+  //   selectedRow.children[2].textContent = contact.isbn;
+
+  //   document.querySelector(".sumbit-btn").value = "Add Contact";
+  //   document.querySelector(".sumbit-btn").classList =
+  //     "btn btn-block btn-warning submit-btn";
+  // }
+
+  static editContactList(element){
+    console.log(element)
+
   }
 
   static clearFields() {
@@ -79,24 +99,23 @@ class Store {
   }
 
   static addContact(contact) {
-      const contacts = Store.getContacts();
-      contacts.push(contact);
-      localStorage.setItem('contacts', JSON.stringify(contacts))
-      console.log(contacts)
+    const contacts = Store.getContacts();
+    contacts.push(contact);
+    localStorage.setItem("contacts", JSON.stringify(contacts));
+    console.log(contacts);
   }
 
   static removeContact(phone) {
-      const contacts = Store.getContacts();
-        contacts.forEach((contact, index)=> {
-            if(contact.phone === phone){
-                contacts.splice(index, 1);
-            }
-        })
+    const contacts = Store.getContacts();
+    contacts.forEach((contact, index) => {
+      if (contact.phone === phone) {
+        contacts.splice(index, 1);
+      }
+    });
 
     //   contacts.filter((contact) => {contact.phone !== phone})
-     localStorage.setItem('contacts', JSON.stringify(contacts))
+    localStorage.setItem("contacts", JSON.stringify(contacts));
   }
-
 }
 
 //Display actual Local Storage
@@ -114,10 +133,9 @@ document.querySelector(".contact-form").addEventListener("submit", (event) => {
   if (firstName === "" || lastName === "" || email === "" || phone === "") {
     UI.showAlert("Please fill all fields", "primary");
   } else {
-      
     const contact = new Contacts(firstName, lastName, email, phone);
     UI.addContactToList(contact);
-    Store.addContact(contact)
+    Store.addContact(contact);
     UI.clearFields();
     UI.showAlert("Contact Added!", "success");
   }
@@ -125,10 +143,32 @@ document.querySelector(".contact-form").addEventListener("submit", (event) => {
 
 //Delete Button Functionality
 document.getElementById("contact-list").addEventListener("click", (event) => {
-  if (event.target.id && event.target.id.indexOf('btn-delete-') === 0) {
+  if (event.target.id && event.target.id.indexOf("btn-delete-") === 0) {
     UI.deleteContact(event.target);
     UI.showAlert("Contact Deleted!", "danger");
     //getting the phone from the store and removing whole object from storage
-    Store.removeContact(event.target.parentElement.previousElementSibling.textContent)
+    Store.removeContact(
+      event.target.parentElement.previousElementSibling.textContent
+    );
   }
-})
+});
+
+//edit button functionality
+document.getElementById("contact-list").addEventListener("click", (event) => {
+  if (event.target.id && event.target.id.indexOf("btn-edit") === 0) {
+    console.log(event.target.parentElement.parentElement.children[0].textContent);
+    let contactRow = event.target.parentElement.parentElement;
+    document.getElementById("first-name").value = contactRow.children[0].textContent;
+    document.getElementById("last-name").value = contactRow.children[1].textContent;
+    document.getElementById("email").value = contactRow.children[2].textContent;
+    document.getElementById("phone-number").value = contactRow.children[3].textContent;
+
+    //change button name
+    document.querySelector(".submit-btn").classList = "btn btn-block btn-info submit-btn"
+    document.querySelector(".submit-btn").textContent = "Update"
+    contactRow = null;
+
+    // UI.showAlert("Contact Edited!", "info");
+    //getting the phone from the store and removing whole object from storage
+  }
+});
