@@ -1,23 +1,20 @@
 let selectedRow = null;
 
+function $(selector) {
+  return document.querySelector(selector);
+}
+
 //Contact class
 class Contacts {
-  constructor(firstName, lastName, email, phone) {
+  constructor(id = null, firstName, lastName, email, phone) {
+    this.id = id || Contacts.id();
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
     this.phone = phone;
   }
-}
-
-//UI class
-class UI {
-  static displayContacts() {
-    const contacts = Store.getContacts();
-    contacts.forEach((contact) => UI.addContactToList(contact));
-  }
-
   // see: https://gist.github.com/jsmithdev/1f31f9f3912d40f6b60bdc7e8098ee9f
+
   static id() {
     let dt = new Date().getTime();
 
@@ -32,24 +29,32 @@ class UI {
 
     return uuid;
   }
+}
+
+//UI class
+class UI {
+  static displayContacts() {
+    const contacts = Store.getContacts();
+    contacts.forEach((contact) => UI.addContactToList(contact));
+  }
 
   static addContactToList(contact) {
     const list = document.getElementById("contact-list");
     const row = document.createElement("tr");
-    // TODO: use contact.id instead of contact.phone
+    row.id = `contact-id-${contact.id}`
     row.innerHTML = `
       <td>${contact.firstName}</td>
       <td>${contact.lastName}</td>
       <td>${contact.email}</td>
       <td>${contact.phone}</td>
-      <td><i id="btn-delete-${contact.phone}" class="bi bi-trash btn btn-primary btn-xs delete"></i>
-      <i id="btn-edit" class="bi bi-pencil btn btn-secondary btn-xs edit"></i>
+      <td><i id="btn-delete-${contact.id}" class="bi bi-trash btn btn-primary btn-xs delete"></i>
+      <i id="btn-edit-${contact.id}" data-contact-id="${contact.id}" class="bi bi-pencil btn btn-secondary btn-xs edit"></i>
       </td>
       `;
     list.appendChild(row);
   }
 
-  // static editContactList(contact) {
+  // static editContactInList(contact) {
   //   selectedRow.children[0].textContent = contact.title;
   //   selectedRow.children[1].textContent = contact.author;
   //   selectedRow.children[2].textContent = contact.isbn;
@@ -59,12 +64,18 @@ class UI {
   //     "btn btn-block btn-warning submit-btn";
   // }
 
-  static editContactList(element){
-    console.log(element)
-
+  static editContactInList(newContact) {
+    const contacts = Store.getContacts()
+    const newContacts = contacts.map((oldContact) => oldContact.id === newContact.id ? newContact : oldContact)
+    Store.replaceContacts(newContacts);
+    const contactRow = $(`#contact-id-${newContact.id}`)
+    console.log(contactRow)
+    contactRow.children[0].innerText = newContact.firstName;
+  
   }
 
   static clearFields() {
+    const contactId = (document.getElementById("contact-id").value = "");
     const firstName = (document.getElementById("first-name").value = "");
     const lastName = (document.getElementById("last-name").value = "");
     const email = (document.getElementById("email").value = "");
@@ -101,8 +112,12 @@ class Store {
   static addContact(contact) {
     const contacts = Store.getContacts();
     contacts.push(contact);
-    localStorage.setItem("contacts", JSON.stringify(contacts));
-    console.log(contacts);
+    Store.replaceContacts(contacts);
+  }
+
+  static replaceContacts(newContacts) {
+    localStorage.setItem("contacts", JSON.stringify(newContacts));
+
   }
 
   static removeContact(phone) {
@@ -116,6 +131,10 @@ class Store {
     //   contacts.filter((contact) => {contact.phone !== phone})
     localStorage.setItem("contacts", JSON.stringify(contacts));
   }
+
+  static getContactById(id) {
+    return Store.getContacts().find((contact) => contact.id === id);
+  }
 }
 
 //Display actual Local Storage
@@ -124,20 +143,26 @@ document.addEventListener("DOMContentLoaded", UI.displayContacts);
 //Add Contact Buttn Functionality
 document.querySelector(".contact-form").addEventListener("submit", (event) => {
   event.preventDefault();
+  const contactId = document.getElementById("contact-id").value;
   const firstName = document.getElementById("first-name").value;
   const lastName = document.getElementById("last-name").value;
   const email = document.getElementById("email").value;
   const phone = document.getElementById("phone-number").value;
-
   //Form validation
   if (firstName === "" || lastName === "" || email === "" || phone === "") {
     UI.showAlert("Please fill all fields", "primary");
   } else {
-    const contact = new Contacts(firstName, lastName, email, phone);
-    UI.addContactToList(contact);
-    Store.addContact(contact);
+    const contact = new Contacts(contactId, firstName, lastName, email, phone);
+    if (contactId) {
+      UI.editContactInList(contact)
+    } else {
+      UI.addContactToList(contact);
+      Store.addContact(contact);
+
+    }
+
     UI.clearFields();
-    UI.showAlert("Contact Added!", "success");
+    // UI.showAlert("Contact Added!", "success");
   }
 });
 
@@ -156,17 +181,19 @@ document.getElementById("contact-list").addEventListener("click", (event) => {
 //edit button functionality
 document.getElementById("contact-list").addEventListener("click", (event) => {
   if (event.target.id && event.target.id.indexOf("btn-edit") === 0) {
-    console.log(event.target.parentElement.parentElement.children[0].textContent);
-    let contactRow = event.target.parentElement.parentElement;
-    document.getElementById("first-name").value = contactRow.children[0].textContent;
-    document.getElementById("last-name").value = contactRow.children[1].textContent;
-    document.getElementById("email").value = contactRow.children[2].textContent;
-    document.getElementById("phone-number").value = contactRow.children[3].textContent;
+    const id = event.target.dataset.contactId;
+    const contact = Store.getContactById(id);
+
+
+    $("#contact-id").value = contact.id;
+    $("#first-name").value = contact.firstName;
+    $("#last-name").value = contact.lastName;
+    $("#email").value = contact.email;
+    $("#phone-number").value = contact.phone;
 
     //change button name
-    document.querySelector(".submit-btn").classList = "btn btn-block btn-info submit-btn"
-    document.querySelector(".submit-btn").textContent = "Update"
-    contactRow = null;
+    $(".submit-btn").classList = "btn btn-block btn-info submit-btn";
+    $(".submit-btn").textContent = "Update";
 
     // UI.showAlert("Contact Edited!", "info");
     //getting the phone from the store and removing whole object from storage
