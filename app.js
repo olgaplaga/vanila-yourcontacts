@@ -4,6 +4,17 @@ function $(selector) {
   return document.querySelector(selector);
 }
 
+//international dial code see : https://www.jqueryscript.net/form/jQuery-International-Telephone-Input-With-Flags-Dial-Codes.html#google_vignette
+const phoneInputField = $('#phone-number');
+const phoneInput = window.intlTelInput(phoneInputField, 
+  {separateDialCode: true,
+  // preferredCountries:["p"],
+  hiddenInput: "full_phone",
+  utilsScript: "//cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/utils.js"
+});
+
+console.log(phoneInput)
+
 //Contact class
 class Contacts {
   constructor(id = null, firstName, lastName, email, phone) {
@@ -69,11 +80,11 @@ class UI {
   }
 
   static clearFields() {
-    const contactId = ($("#contact-id").value = "");
-    const firstName = ($("#first-name").value = "");
-    const lastName = ($("#last-name").value = "");
-    const email = ($("#email").value = "");
-    const phone = ($("#phone-number").value = "");
+    const contactId = $("#contact-id").value = "";
+    const firstName = $("#first-name").value = "";
+    const lastName = $("#last-name").value = "";
+    const email = $("#email").value = "";
+    const phone = $("#phone-number").value = "";
   }
 
   static deleteContact(element) {
