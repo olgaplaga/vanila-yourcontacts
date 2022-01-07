@@ -48,7 +48,7 @@ class UI {
       <td>${contact.email}</td>
       <td>${contact.phone}</td>
       <td><i id="btn-delete-${contact.id}" class="bi bi-trash btn btn-primary btn-xs delete"></i>
-      <i id="btn-edit-${contact.id}" data-contact-id="${contact.id}" class="bi bi-pencil btn btn-secondary btn-xs edit"></i>
+      <i id="btn-edit-${contact.id}" data-contact-id="${contact.id}" class="bi bi-pencil btn btn-info btn-xs edit"></i>
       </td>
       `;
     list.appendChild(row);
