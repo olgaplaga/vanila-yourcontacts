@@ -5,15 +5,16 @@ function $(selector) {
 }
 
 //international dial code see : https://www.jqueryscript.net/form/jQuery-International-Telephone-Input-With-Flags-Dial-Codes.html#google_vignette
-const phoneInputField = $('#phone-number');
-const phoneInput = window.intlTelInput(phoneInputField, 
-  {separateDialCode: true,
+const phoneInputField = $("#phone-number");
+const phoneInput = window.intlTelInput(phoneInputField, {
+  separateDialCode: true,
   // preferredCountries:["p"],
   hiddenInput: "full_phone",
-  utilsScript: "//cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/utils.js"
+  utilsScript:
+    "//cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/utils.js",
 });
 
-console.log(phoneInput)
+console.log(phoneInput);
 
 //Contact class
 class Contacts {
@@ -53,6 +54,7 @@ class UI {
     const list = document.getElementById("contact-list");
     const row = document.createElement("tr");
     row.id = `contact-id-${contact.id}`;
+    row.className = "row-clear";
     row.innerHTML = `
       <td>${contact.firstName}</td>
       <td>${contact.lastName}</td>
@@ -80,11 +82,11 @@ class UI {
   }
 
   static clearFields() {
-    const contactId = $("#contact-id").value = "";
-    const firstName = $("#first-name").value = "";
-    const lastName = $("#last-name").value = "";
-    const email = $("#email").value = "";
-    const phone = $("#phone-number").value = "";
+    const contactId = ($("#contact-id").value = "");
+    const firstName = ($("#first-name").value = "");
+    const lastName = ($("#last-name").value = "");
+    const email = ($("#email").value = "");
+    const phone = ($("#phone-number").value = "");
   }
 
   static deleteContact(element) {
@@ -164,13 +166,14 @@ $(".contact-form").addEventListener("submit", (event) => {
       $(".submit-btn").textContent = "Add Contact";
       UI.showAlert("Contact Edited!", "info");
 
+      //change back row style 
+      $(`#contact-id-${contact.id}`).className = "table";
     } else {
       UI.addContactToList(contact);
       Store.addContact(contact);
       UI.showAlert("Contact Added!", "success");
     }
     UI.clearFields();
-    
   }
 });
 
@@ -184,10 +187,14 @@ $("#contact-list").addEventListener("click", (event) => {
     Store.removeContact(
       event.target.parentElement.previousElementSibling.textContent
     );
+    //edit button finctionality
   } else if (event.target.id && event.target.id.indexOf("btn-edit") === 0) {
     //Take data from edited field by id
     const id = event.target.dataset.contactId;
     const contact = Store.getContactById(id);
+
+    //change row style
+    $(`#contact-id-${contact.id}`).className = "table table-primary";
 
     //push this data to the form fields for edition
     $("#contact-id").value = contact.id;
