@@ -8,13 +8,15 @@ function $(selector) {
 const phoneInputField = $("#phone-number");
 const phoneInput = window.intlTelInput(phoneInputField, {
   separateDialCode: true,
-  // preferredCountries:["p"],
+  initialCountry: "pl",
+  localizedCountries: "pl",
+  preferredCountries: ["pl"],
   hiddenInput: "full_phone",
+  formatOnDisplay: true,
   utilsScript:
     "//cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/utils.js",
 });
 
-console.log(phoneInput);
 
 //Contact class
 class Contacts {
@@ -53,6 +55,8 @@ class UI {
   static addContactToList(contact) {
     const list = document.getElementById("contact-list");
     const row = document.createElement("tr");
+    const dialCode = phoneInput.s.dialCode;
+
     row.id = `contact-id-${contact.id}`;
     row.className = "row-clear";
     row.innerHTML = `
@@ -87,6 +91,7 @@ class UI {
     const lastName = ($("#last-name").value = "");
     const email = ($("#email").value = "");
     const phone = ($("#phone-number").value = "");
+    const dialCode = (phoneInput.s.dialCode = "");
   }
 
   static deleteContact(element) {
@@ -126,10 +131,11 @@ class Store {
     localStorage.setItem("contacts", JSON.stringify(newContacts));
   }
 
-  static removeContact(phone) {
+  static removeContact(id) {
     const contacts = Store.getContacts();
+    console.log(id);
     contacts.forEach((contact, index) => {
-      if (contact.phone === phone) {
+      if (`btn-delete-${contact.id}` === id) {
         contacts.splice(index, 1);
       }
     });
@@ -149,11 +155,13 @@ document.addEventListener("DOMContentLoaded", UI.displayContacts);
 //Add Contact Btn Functionality
 $(".contact-form").addEventListener("submit", (event) => {
   event.preventDefault();
+  const dialCode = phoneInput.s.dialCode;
   const contactId = $("#contact-id").value;
   const firstName = $("#first-name").value;
   const lastName = $("#last-name").value;
   const email = $("#email").value;
-  const phone = $("#phone-number").value;
+  const phoneBody = $("#phone-number").value;
+  const phone = `+${dialCode} ${phoneBody}`;
 
   //Form validation
   if (firstName === "" || lastName === "" || email === "" || phone === "") {
@@ -166,7 +174,7 @@ $(".contact-form").addEventListener("submit", (event) => {
       $(".submit-btn").textContent = "Add Contact";
       UI.showAlert("Contact Edited!", "info");
 
-      //change back row style 
+      //change back row style
       $(`#contact-id-${contact.id}`).className = "table";
     } else {
       UI.addContactToList(contact);
@@ -177,16 +185,13 @@ $(".contact-form").addEventListener("submit", (event) => {
   }
 });
 
-//Delete Button Functionality
+//Delete and Edit Button Functionality
 $("#contact-list").addEventListener("click", (event) => {
   if (event.target.id && event.target.id.indexOf("btn-delete-") === 0) {
     UI.deleteContact(event.target);
     UI.showAlert("Contact Deleted!", "danger");
+    Store.removeContact(event.target.id);
 
-    //getting the id from the store and removing whole object from storage
-    Store.removeContact(
-      event.target.parentElement.previousElementSibling.textContent
-    );
     //edit button finctionality
   } else if (event.target.id && event.target.id.indexOf("btn-edit") === 0) {
     //Take data from edited field by id
