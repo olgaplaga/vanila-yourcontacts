@@ -84,8 +84,7 @@ class UI {
     contactRow.children[0].innerText = newContact.firstName;
     contactRow.children[1].innerText = newContact.lastName;
     contactRow.children[2].innerText = newContact.email;
-    contactRow.children[3].innerText = newContact.phone;
-    console.log(contactRow.children[3].innerText)
+    contactRow.children[3].innerText = `${newContact.dialCode} ${newContact.phone}`;
   }
 
   static clearFields() {
@@ -94,11 +93,6 @@ class UI {
     const lastName = ($("#last-name").value = "");
     const email = ($("#email").value = "");
     const phone = ($("#phone-number").value = "");
-  //   const dialCode = $('.iti__selected-dial-code').innerText = "";
-  // const flagCode = $('.iti__selected-flag').children[0].className = ""
-
-
-    // const dialCode = (phoneInput.s.dialCode = "");
   }
 
   static deleteContact(element) {
@@ -166,13 +160,8 @@ $(".contact-form").addEventListener("submit", (event) => {
   const lastName = $("#last-name").value;
   const email = $("#email").value;
   const phone = $('#phone-number').value;
-  // const phoneBody = $("#phone-number").value;
   const dialCode = $('.iti__selected-dial-code').textContent;
-  // console.log(dialCode)
-  // const dialCode = phoneInput.s.dialCode;
-  // const phone = `${phoneBody}`;
   const flagCode = $('.iti__selected-flag').children[0].className;
-  // console.log(flagCode)
 
   //Form validation
   if (firstName === "" || lastName === "" || email === "" || phone === "") {
@@ -212,20 +201,13 @@ $("#contact-list").addEventListener("click", (event) => {
     //change row style
     $(`#contact-id-${contact.id}`).className = "table table-primary";
 
-    //push this data to the form fields for edition
-    // const dialCode = phoneInput.s.dialCode;
-    
+    //push this data to the form fields for edition    
     $("#contact-id").value = contact.id;
     $("#first-name").value = contact.firstName;
     $("#last-name").value = contact.lastName;
     $("#email").value = contact.email;
-
-    //exclude dial code from phone input for editing purpose using regex
-    // const regexCode = /([^\s]+)/
     $("#phone-number").value = contact.phone;
     $('.iti__selected-dial-code').textContent = contact.dialCode;
-    // $("#phone-number").value = contact.phone.replace(contact.phone.match(regexCode)[0], '');
-    //
     $('.iti__selected-flag').children[0].className = contact.flagCode;
 
 
