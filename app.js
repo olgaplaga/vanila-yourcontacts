@@ -19,12 +19,13 @@ const phoneInput = window.intlTelInput(phoneInputField, {
 
 //Contact class
 class Contacts {
-  constructor(id = null, firstName, lastName, email, flagCode, phone) {
+  constructor(id = null, firstName, lastName, email, flagCode, dialCode, phone) {
     this.id = id || Contacts.id();
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
     this.flagCode = flagCode;
+    this.dialCode = dialCode;
     this.phone = phone;
   }
   // see: https://gist.github.com/jsmithdev/1f31f9f3912d40f6b60bdc7e8098ee9f
@@ -55,7 +56,8 @@ class UI {
   static addContactToList(contact) {
     const list = document.getElementById("contact-list");
     const row = document.createElement("tr");
-    const dialCode = phoneInput.s.dialCode;
+    const flag = $('.iti__selected-flag').children[0].className;
+    // const dialCode = phoneInput.s.dialCode;
 
     row.id = `contact-id-${contact.id}`;
     row.className = "row-clear";
@@ -63,7 +65,7 @@ class UI {
       <td>${contact.firstName}</td>
       <td>${contact.lastName}</td>
       <td>${contact.email}</td>
-      <td>${contact.phone}</td>
+      <td>${contact.dialCode} ${contact.phone}</td>
       <td><i id="btn-delete-${contact.id}" class="bi bi-trash btn btn-primary btn-xs delete"></i>
       <i id="btn-edit-${contact.id}" data-contact-id="${contact.id}" class="bi bi-pencil btn btn-info btn-xs edit"></i>
       </td>
@@ -83,6 +85,7 @@ class UI {
     contactRow.children[1].innerText = newContact.lastName;
     contactRow.children[2].innerText = newContact.email;
     contactRow.children[3].innerText = newContact.phone;
+    console.log(contactRow.children[3].innerText)
   }
 
   static clearFields() {
@@ -91,7 +94,11 @@ class UI {
     const lastName = ($("#last-name").value = "");
     const email = ($("#email").value = "");
     const phone = ($("#phone-number").value = "");
-    const dialCode = (phoneInput.s.dialCode = "");
+  //   const dialCode = $('.iti__selected-dial-code').innerText = "";
+  // const flagCode = $('.iti__selected-flag').children[0].className = ""
+
+
+    // const dialCode = (phoneInput.s.dialCode = "");
   }
 
   static deleteContact(element) {
@@ -133,7 +140,6 @@ class Store {
 
   static removeContact(id) {
     const contacts = Store.getContacts();
-    console.log(id);
     contacts.forEach((contact, index) => {
       if (`btn-delete-${contact.id}` === id) {
         contacts.splice(index, 1);
@@ -159,18 +165,20 @@ $(".contact-form").addEventListener("submit", (event) => {
   const firstName = $("#first-name").value;
   const lastName = $("#last-name").value;
   const email = $("#email").value;
-  const phoneBody = $("#phone-number").value;
-  
-  const dialCode = phoneInput.s.dialCode;
-  const phone = `+${dialCode} ${phoneBody}`;
+  const phone = $('#phone-number').value;
+  // const phoneBody = $("#phone-number").value;
+  const dialCode = $('.iti__selected-dial-code').textContent;
+  // console.log(dialCode)
+  // const dialCode = phoneInput.s.dialCode;
+  // const phone = `${phoneBody}`;
   const flagCode = $('.iti__selected-flag').children[0].className;
-  console.log(flagCode)
+  // console.log(flagCode)
 
   //Form validation
   if (firstName === "" || lastName === "" || email === "" || phone === "") {
     UI.showAlert("Please fill all fields", "primary");
   } else {
-    const contact = new Contacts(contactId, firstName, lastName, email, flagCode, phone);
+    const contact = new Contacts(contactId, firstName, lastName, email, flagCode, dialCode, phone);
     if (contactId) {
       UI.editContactInList(contact);
       $(".submit-btn").classList = "btn btn-block btn-warning submit-btn";
@@ -205,7 +213,7 @@ $("#contact-list").addEventListener("click", (event) => {
     $(`#contact-id-${contact.id}`).className = "table table-primary";
 
     //push this data to the form fields for edition
-    const dialCode = phoneInput.s.dialCode;
+    // const dialCode = phoneInput.s.dialCode;
     
     $("#contact-id").value = contact.id;
     $("#first-name").value = contact.firstName;
@@ -213,13 +221,13 @@ $("#contact-list").addEventListener("click", (event) => {
     $("#email").value = contact.email;
 
     //exclude dial code from phone input for editing purpose using regex
-    const regexCode = /([^\s]+)/
-    $("#phone-number").value = contact.phone.replace(contact.phone.match(regexCode)[0], '');
+    // const regexCode = /([^\s]+)/
+    $("#phone-number").value = contact.phone;
+    $('.iti__selected-dial-code').textContent = contact.dialCode;
+    // $("#phone-number").value = contact.phone.replace(contact.phone.match(regexCode)[0], '');
     //
-    $('.iti__selected-dial-code').textContent = contact.phone.match(regexCode)[0]
     $('.iti__selected-flag').children[0].className = contact.flagCode;
 
-    // $('.')
 
     //change button name
     $(".submit-btn").classList = "btn btn-block btn-info submit-btn";
