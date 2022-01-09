@@ -19,11 +19,12 @@ const phoneInput = window.intlTelInput(phoneInputField, {
 
 //Contact class
 class Contacts {
-  constructor(id = null, firstName, lastName, email, phone) {
+  constructor(id = null, firstName, lastName, email, flagCode, phone) {
     this.id = id || Contacts.id();
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
+    this.flagCode = flagCode;
     this.phone = phone;
   }
   // see: https://gist.github.com/jsmithdev/1f31f9f3912d40f6b60bdc7e8098ee9f
@@ -159,14 +160,17 @@ $(".contact-form").addEventListener("submit", (event) => {
   const lastName = $("#last-name").value;
   const email = $("#email").value;
   const phoneBody = $("#phone-number").value;
+  
   const dialCode = phoneInput.s.dialCode;
   const phone = `+${dialCode} ${phoneBody}`;
+  const flagCode = $('.iti__selected-flag').children[0].className;
+  console.log(flagCode)
 
   //Form validation
   if (firstName === "" || lastName === "" || email === "" || phone === "") {
     UI.showAlert("Please fill all fields", "primary");
   } else {
-    const contact = new Contacts(contactId, firstName, lastName, email, phone);
+    const contact = new Contacts(contactId, firstName, lastName, email, flagCode, phone);
     if (contactId) {
       UI.editContactInList(contact);
       $(".submit-btn").classList = "btn btn-block btn-warning submit-btn";
@@ -201,16 +205,21 @@ $("#contact-list").addEventListener("click", (event) => {
     $(`#contact-id-${contact.id}`).className = "table table-primary";
 
     //push this data to the form fields for edition
+    const dialCode = phoneInput.s.dialCode;
     
     $("#contact-id").value = contact.id;
     $("#first-name").value = contact.firstName;
     $("#last-name").value = contact.lastName;
     $("#email").value = contact.email;
-    
-    //exclude dial code from phone input for editing purpose
-    const dialCode = phoneInput.s.dialCode;
-    const regex = /([^\s]+)/
-    $("#phone-number").value = contact.phone.replace(contact.phone.match(regex)[0], '');
+
+    //exclude dial code from phone input for editing purpose using regex
+    const regexCode = /([^\s]+)/
+    $("#phone-number").value = contact.phone.replace(contact.phone.match(regexCode)[0], '');
+    //
+    $('.iti__selected-dial-code').textContent = contact.phone.match(regexCode)[0]
+    $('.iti__selected-flag').children[0].className = contact.flagCode;
+
+    // $('.')
 
     //change button name
     $(".submit-btn").classList = "btn btn-block btn-info submit-btn";
