@@ -17,7 +17,6 @@ const phoneInput = window.intlTelInput(phoneInputField, {
     "//cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/utils.js",
 });
 
-
 //Contact class
 class Contacts {
   constructor(id = null, firstName, lastName, email, phone) {
@@ -155,12 +154,12 @@ document.addEventListener("DOMContentLoaded", UI.displayContacts);
 //Add Contact Btn Functionality
 $(".contact-form").addEventListener("submit", (event) => {
   event.preventDefault();
-  const dialCode = phoneInput.s.dialCode;
   const contactId = $("#contact-id").value;
   const firstName = $("#first-name").value;
   const lastName = $("#last-name").value;
   const email = $("#email").value;
   const phoneBody = $("#phone-number").value;
+  const dialCode = phoneInput.s.dialCode;
   const phone = `+${dialCode} ${phoneBody}`;
 
   //Form validation
@@ -202,11 +201,16 @@ $("#contact-list").addEventListener("click", (event) => {
     $(`#contact-id-${contact.id}`).className = "table table-primary";
 
     //push this data to the form fields for edition
+    
     $("#contact-id").value = contact.id;
     $("#first-name").value = contact.firstName;
     $("#last-name").value = contact.lastName;
     $("#email").value = contact.email;
-    $("#phone-number").value = contact.phone;
+    
+    //exclude dial code from phone input for editing purpose
+    const dialCode = phoneInput.s.dialCode;
+    const regex = /([^\s]+)/
+    $("#phone-number").value = contact.phone.replace(contact.phone.match(regex)[0], '');
 
     //change button name
     $(".submit-btn").classList = "btn btn-block btn-info submit-btn";
