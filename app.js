@@ -211,7 +211,7 @@ $("#contact-list").addEventListener("click", (event) => {
   if (
     event.target.id &&
     event.target.id.indexOf("btn-delete-") === 0 &&
-    event.target.disabled === false
+    !event.target.hasAttribute("disabled")
   ) {
     console.log(event.target);
     UI.deleteContact(event.target);
@@ -253,8 +253,9 @@ $("#contact-list").addEventListener("click", (event) => {
     event.target.id &&
     event.target.id.indexOf("btn-edit") === 0 &&
     $(".submit-btn").textContent === "Update"
-  ) {
-    event.preventDefault();
+    ) {
+      event.preventDefault();
+      console.log(event.target)
     $(".submit-btn").classList.remove("shake");
     $(".submit-btn").offsetWidth;
     $(".submit-btn").classList.add("shake");
