@@ -19,7 +19,15 @@ const phoneInput = window.intlTelInput(phoneInputField, {
 
 //Contact class
 class Contacts {
-  constructor(id = null, firstName, lastName, email, flagCode, dialCode, phone) {
+  constructor(
+    id = null,
+    firstName,
+    lastName,
+    email,
+    flagCode,
+    dialCode,
+    phone
+  ) {
     this.id = id || Contacts.id();
     this.firstName = firstName;
     this.lastName = lastName;
@@ -56,7 +64,7 @@ class UI {
   static addContactToList(contact) {
     const list = document.getElementById("contact-list");
     const row = document.createElement("tr");
-    const flag = $('.iti__selected-flag').children[0].className;
+    const flag = $(".iti__selected-flag").children[0].className;
     // const dialCode = phoneInput.s.dialCode;
 
     row.id = `contact-id-${contact.id}`;
@@ -159,27 +167,35 @@ $(".contact-form").addEventListener("submit", (event) => {
   const firstName = $("#first-name").value;
   const lastName = $("#last-name").value;
   const email = $("#email").value;
-  const phone = $('#phone-number').value;
-  const dialCode = $('.iti__selected-dial-code').textContent;
-  const flagCode = $('.iti__selected-flag').children[0].className;
+  const phone = $("#phone-number").value;
+  const dialCode = $(".iti__selected-dial-code").textContent;
+  const flagCode = $(".iti__selected-flag").children[0].className;
 
   //Form validation
   if (firstName === "" || lastName === "" || email === "" || phone === "") {
     UI.showAlert("Please fill all fields", "primary");
   } else {
-    const contact = new Contacts(contactId, firstName, lastName, email, flagCode, dialCode, phone);
+    const contact = new Contacts(
+      contactId,
+      firstName,
+      lastName,
+      email,
+      flagCode,
+      dialCode,
+      phone
+    );
     if (contactId) {
       UI.editContactInList(contact);
-      $(`#btn-delete-${contactId}`).setAttribute("disabled", "false")
-      console.log($(`#btn-delete-${contactId}`))
+      UI.showAlert("Contact Edited!", "info");
       $(".submit-btn").classList = "btn btn-block btn-warning submit-btn";
       $(".submit-btn").textContent = "Add Contact";
-
-
-      UI.showAlert("Contact Edited!", "info");
+      
+      // bring back delete after updating
+      $(`#btn-delete-${contactId}`).removeAttribute("disabled", "false");
+      
 
       //change back row style
-      $(`#contact-id-${contact.id}`).className = "table";
+      $(`#contact-id-${contactId}`).className = "table";
     } else {
       UI.addContactToList(contact);
       Store.addContact(contact);
@@ -190,15 +206,24 @@ $(".contact-form").addEventListener("submit", (event) => {
 });
 
 //Delete and Edit Button Functionality
-$("#contact-list").addEventListener("click", (event) => {
 
-  if (event.target.id && event.target.id.indexOf("btn-delete-") === 0) {
+$("#contact-list").addEventListener("click", (event) => {
+  if (
+    event.target.id &&
+    event.target.id.indexOf("btn-delete-") === 0 &&
+    event.target.disabled === false
+  ) {
+    console.log(event.target);
     UI.deleteContact(event.target);
     UI.showAlert("Contact Deleted!", "danger");
-    Store.removeContact(event.target.id);    
+    Store.removeContact(event.target.id);
 
-  } else if (event.target.id && event.target.id.indexOf("btn-edit") === 0 && 
-  $(".submit-btn").textContent === "Add Contact")  {
+  } else if (
+    event.target.id &&
+    event.target.id.indexOf("btn-edit") === 0 &&
+    $(".submit-btn").textContent === "Add Contact"
+  ) {
+
     //Take data from edited field by id
     const id = event.target.dataset.contactId;
     const contact = Store.getContactById(id);
@@ -206,35 +231,32 @@ $("#contact-list").addEventListener("click", (event) => {
     //change row style
     $(`#contact-id-${contact.id}`).className = "table table-primary";
 
-    //push this data to the form fields for edition    
+    //push this data to the form fields for edition
     $("#contact-id").value = contact.id;
     $("#first-name").value = contact.firstName;
     $("#last-name").value = contact.lastName;
     $("#email").value = contact.email;
     $("#phone-number").value = contact.phone;
-    $('.iti__selected-dial-code').textContent = contact.dialCode;
-    $('.iti__selected-flag').children[0].className = contact.flagCode;
+    $(".iti__selected-dial-code").textContent = contact.dialCode;
+    $(".iti__selected-flag").children[0].className = contact.flagCode;
 
     //change button name
     $(".submit-btn").classList = "btn btn-block btn-info submit-btn";
     $(".submit-btn").textContent = "Update";
-  
-    $(`#btn-delete-${contact.id}`).setAttribute("disabled", "true")
 
+    //Unable to delete edited data
+    $(`#btn-delete-${contact.id}`).setAttribute("disabled", "true");
     console.log($(`#btn-delete-${contact.id}`))
 
-
-  }
-  else if (event.target.id && event.target.id.indexOf("btn-edit") === 0 && 
-  $(".submit-btn").textContent === "Update"){
+    //edit validation - can not double click edit before updating change
+  } else if (
+    event.target.id &&
+    event.target.id.indexOf("btn-edit") === 0 &&
+    $(".submit-btn").textContent === "Update"
+  ) {
     event.preventDefault();
     $(".submit-btn").classList.remove("shake");
     $(".submit-btn").offsetWidth;
     $(".submit-btn").classList.add("shake");
-
-
-  //  console.log($(`#contact-id-${contact.id}`))
-
-    
   }
 });
