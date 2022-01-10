@@ -74,8 +74,9 @@ class UI {
       <td>${contact.lastName}</td>
       <td>${contact.email}</td>
       <td>${contact.dialCode} ${contact.phone}</td>
-      <td><i id="btn-delete-${contact.id}" class="bi bi-trash btn btn-primary btn-xs delete"></i>
-      <i id="btn-edit-${contact.id}" data-contact-id="${contact.id}" class="bi bi-pencil btn btn-info btn-xs edit"></i>
+      <td>
+      <i id="btn-edit-${contact.id}" title="Edit" data-contact-id="${contact.id}" class="bi bi-pencil btn btn-info btn-xs edit"></i>
+      <i id="btn-delete-${contact.id}" title="Delete" class="bi bi-trash btn btn-primary btn-xs delete"></i>
       </td>
       `;
     list.appendChild(row);
@@ -204,6 +205,15 @@ $(".contact-form").addEventListener("submit", (event) => {
     UI.clearFields();
   }
 });
+
+//Restart form button
+$(".contact-form").addEventListener("click", (event) => {
+  event.preventDefault();
+  UI.clearFields();
+  console.log(event.target.classList)
+  if (event.target.classList.contains("restart-form")) {
+  }
+})
 
 //Delete and Edit Button Functionality
 

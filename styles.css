@@ -1,7 +1,30 @@
 .shake {
   animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
   color: red;
+  
 }
+.btn {
+  opacity: 0.9;
+}
+
+.btn:hover {
+  font-size: 1.4rem;
+  transition: all 0.3s ease;
+  opacity: 1.0;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.submit-btn {
+  min-width: 90%;
+  margin-right: 1%;
+}
+
+
 
 @keyframes shake {
   10%,
