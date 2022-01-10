@@ -170,8 +170,12 @@ $(".contact-form").addEventListener("submit", (event) => {
     const contact = new Contacts(contactId, firstName, lastName, email, flagCode, dialCode, phone);
     if (contactId) {
       UI.editContactInList(contact);
+      $(`#btn-delete-${contactId}`).setAttribute("disabled", "false")
+      console.log($(`#btn-delete-${contactId}`))
       $(".submit-btn").classList = "btn btn-block btn-warning submit-btn";
       $(".submit-btn").textContent = "Add Contact";
+
+
       UI.showAlert("Contact Edited!", "info");
 
       //change back row style
@@ -187,13 +191,14 @@ $(".contact-form").addEventListener("submit", (event) => {
 
 //Delete and Edit Button Functionality
 $("#contact-list").addEventListener("click", (event) => {
+
   if (event.target.id && event.target.id.indexOf("btn-delete-") === 0) {
     UI.deleteContact(event.target);
     UI.showAlert("Contact Deleted!", "danger");
-    Store.removeContact(event.target.id);
+    Store.removeContact(event.target.id);    
 
-    //edit button finctionality
-  } else if (event.target.id && event.target.id.indexOf("btn-edit") === 0) {
+  } else if (event.target.id && event.target.id.indexOf("btn-edit") === 0 && 
+  $(".submit-btn").textContent === "Add Contact")  {
     //Take data from edited field by id
     const id = event.target.dataset.contactId;
     const contact = Store.getContactById(id);
@@ -210,9 +215,26 @@ $("#contact-list").addEventListener("click", (event) => {
     $('.iti__selected-dial-code').textContent = contact.dialCode;
     $('.iti__selected-flag').children[0].className = contact.flagCode;
 
-
     //change button name
     $(".submit-btn").classList = "btn btn-block btn-info submit-btn";
     $(".submit-btn").textContent = "Update";
+  
+    $(`#btn-delete-${contact.id}`).setAttribute("disabled", "true")
+
+    console.log($(`#btn-delete-${contact.id}`))
+
+
+  }
+  else if (event.target.id && event.target.id.indexOf("btn-edit") === 0 && 
+  $(".submit-btn").textContent === "Update"){
+    event.preventDefault();
+    $(".submit-btn").classList.remove("shake");
+    $(".submit-btn").offsetWidth;
+    $(".submit-btn").classList.add("shake");
+
+
+  //  console.log($(`#contact-id-${contact.id}`))
+
+    
   }
 });
