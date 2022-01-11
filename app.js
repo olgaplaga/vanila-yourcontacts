@@ -1,24 +1,23 @@
-const addressData = [street, streetNum, flatNum, city, state, postCode. country]
-
-const addressExample = [{
-  street : "filipowska",
-  streetNum : "5",
-  flatNum: "",
-  city: "Bakałarzewo",
-  state: "Podlaskie",
-  postCode: "16-423",
-  country: "Polska",
-},
-{
-  street: "Odolanska",
-  streetNum : "14",
-  flatNum: "11",
-  city: "Warszawa",
-  state: "Mazowieckie",
-  postCode: "02-561",
-  country: "Polska",
-
-}];
+const addressExample = [
+  {
+    street: "filipowska",
+    streetNum: "5",
+    flatNum: "",
+    city: "Bakałarzewo",
+    state: "Podlaskie",
+    postCode: "16-423",
+    country: "Polska",
+  },
+  {
+    street: "Odolanska",
+    streetNum: "14",
+    flatNum: "11",
+    city: "Warszawa",
+    state: "Mazowieckie",
+    postCode: "02-561",
+    country: "Polska",
+  },
+];
 
 let selectedRow = null;
 
@@ -97,7 +96,7 @@ class UI {
   //!!!!!!!
   static displayAddress() {
     const address = addressExample;
-    address.forEach((address) => UI.addAddressToList(address))
+    address.forEach((address) => UI.addAddressToList(address));
   }
 
   static addContactToList(contact) {
@@ -120,41 +119,28 @@ class UI {
   }
 
   static addAddressForm() {
+    const addressData = {
+      street: ["Street", "street", "text"],
+      streetNum: ["Street Number", "street-num", "number"],
+      flatNum: ["Flat Number", "flat-number", "number"],
+      city: ["City", "city", "text"],
+      state: ["State", "state", "text"],
+      postCode: ["Postal Code", "postal-code", "text"],
+      country: ["Country", "country", "text"],
+    };
+
     const form = $(".more-fields");
-    const fieldsGroup = document.createElement('div');
-    fieldsGroup.className = "address-group"
-    fieldsGroup.innerHTML = `
-    <div class="form-group mb-3">
-      <h5 class="mt-4">Address 1</h5>
-      <label for="address.street" class="form-label">Street</label>
-      <input type="text" class="form-control" id="address.street" name="address.street"></input>
-    </div>
-    <div class="form-group mb-3">
-      <label for="address.streetNum" class="form-label">Street Number</label>
-      <input type="text" class="form-control" id="address.streetNum" name="address.streetNum"></input>
-    </div>
-    <div class="form-group mb-3">
-      <label for="address.flatNum" class="form-label">Flat Number</label>
-      <input type="text" class="form-control" id="address.flatNum" name="address.flatNum"></input>
-    </div>
-    <div class="form-group mb-3">
-      <label for="address.city" class="form-label">City</label>
-      <input type="text" class="form-control" id="address.city" name="address.city"></input>
-    </div>
-    <div class="form-group mb-3">
-      <label for="address.state" class="form-label">State</label>
-      <input type="text" class="form-control" id="address.state" name="address.state"></input>
-    </div>
-    <div class="form-group mb-3">
-      <label for="address.postCode" class="form-label">Post Code</label>
-      <input type="text" class="form-control" id="address.postCode" name="address.postCode"></input>
-    </div>
-    <div class="form-group mb-3">
-      <label for="address.country" class="form-label">Country</label>
-      <input type="text" class="form-control" id="address.country" name="address.country"></input>
-    </div>
-    `;
-    form.appendChild(fieldsGroup);
+
+    for (const key in addressData) {
+      const fieldsGroup = document.createElement("div");
+      // fieldsGroup.className = "address-group";
+      fieldsGroup.innerHTML = `
+        <label for="${addressData[key][1]}" class="form-label">${addressData[key][0]}</label>
+        <input type="${addressData[key][2]}" class="form-control" id="${addressData[key][1]}" name="${addressData[key][1]}"></input>
+          `;
+
+      form.appendChild(fieldsGroup);
+    }
   }
 
   static editContactInList(newContact) {
@@ -363,10 +349,103 @@ $("#contact-list").addEventListener("click", (event) => {
   }
 });
 
-$("#more-btn").addEventListener('click', event => {
+$("#more-btn").addEventListener("click", (event) => {
   event.preventDefault();
   //  if(event.target.id === )
   UI.addAddressForm();
+});
 
+//   const addressData = {
+//     street: ["Street", "street", "text"],
+//     streetNum: ["Street Number", "street-num", "number"],
+//     flatNum: ["Flat Number", "flat-number", "number"],
+//     city: ["City", "city", "text"],
+//     state: ["State", "state", "text"],
+//     postCode: ["Postal Code", "postal-code", "text"],
+//     country: ["Country","country", "text"],
+//   };
 
-})
+// // const addressData = [{
+// //   street: ["Street", "street", "text"]},
+// //   {streetNum: ["Street Number", "street-num", "number"]},
+// //   {flatNum: ["Flat Number", "flat-number", "number"]},
+// //   {city: ["City", "city", "text"]},
+// //   {state: ["State", "state", "text"]},
+// //   {postCode: ["Postal Code", "postal-code", "text"]},
+// //   {country: ["Country","country", "text"]},
+// // ];
+
+// // console.log(addressData[0].street[1])
+// // // addressData.forEach((data)=> {console.log(data)})
+// // addressData.forEach((object) => {console.log(addressData[0])})
+
+// for (const key in addressData) {
+//   console.log(`${addressData[key][2]}`)
+// }
+
+// fieldsGroup.innerHTML = `
+// <div class="form-group mb-3">
+//   <h5 class="mt-4">Address 1</h5>
+//   <label for="address.street" class="form-label">Street</label>
+//   <input type="text" class="form-control" id="address.street" name="address.street"></input>
+// </div>
+// <div class="form-group mb-3">
+//   <label for="address.streetNum" class="form-label">Street Number</label>
+//   <input type="text" class="form-control" id="address.streetNum" name="address.streetNum"></input>
+// </div>
+// <div class="form-group mb-3">
+//   <label for="address.flatNum" class="form-label">Flat Number</label>
+//   <input type="text" class="form-control" id="address.flatNum" name="address.flatNum"></input>
+// </div>
+// <div class="form-group mb-3">
+//   <label for="address.city" class="form-label">City</label>
+//   <input type="text" class="form-control" id="address.city" name="address.city"></input>
+// </div>
+// <div class="form-group mb-3">
+//   <label for="address.state" class="form-label">State</label>
+//   <input type="text" class="form-control" id="address.state" name="address.state"></input>
+// </div>
+// <div class="form-group mb-3">
+//   <label for="address.postCode" class="form-label">Post Code</label>
+//   <input type="text" class="form-control" id="address.postCode" name="address.postCode"></input>
+// </div>
+// <div class="form-group mb-3">
+//   <label for="address.country" class="form-label">Country</label>
+//   <input type="text" class="form-control" id="address.country" name="address.country"></input>
+// </div>
+// `;
+
+// const addressLabels = [
+//   "Street",
+//   "Street Number",
+//   "Flat Number",
+//   "City",
+//   "State",
+//   "Postal Code",
+//   "Country",
+// ];
+
+//     const addressLabels = [
+//       "Street",
+//       "Street Number",
+//       "Flat Number",
+//       "City",
+//       "State",
+//       "Postal Code",
+//       "Country",
+//     ];
+
+//     addressLabels.forEach((data) => {
+//     const fieldsGroup = document.createElement("div");
+//     fieldsGroup.className = "address-group";
+//     fieldsGroup.innerHTML = `
+//     <div class="form-group mb-3">
+//       <label for="${data}" class="form-label">${data}</label>
+//       <input type="${data}" class="form-control" id="${data}" name="${data}"></input>
+//     </div>
+//     `
+//     form.appendChild(fieldsGroup);
+//   })
+//   console.log(fieldsGroup)
+
+// }
