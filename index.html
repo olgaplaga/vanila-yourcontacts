@@ -51,19 +51,17 @@
                       <label for="phone-number" class="form-label">Phone Number</label><br>
                       <input type="tel" class="form-control" id="phone-number" name="phone-number[main]">
                     </div>
-                    <div class="mb-5 mt-5">
+                    <div class="mb-4 mt-4">
                       <h4>
-                        <i class="btn text-success bi bi-plus-circle-fill"> More</i>
-                      
-
+                        <i type="button" id="more-btn" class="btn text-success bi bi-plus-circle-fill"> More</i>
                       </h4>
+                    </div>
+                    <div class="more-fields">
+
                     </div>
                     <div class="form-buttons">
                       <button type="submit" class="btn btn-warning submit-btn">Add Contact</button>
                       <i type="button" class="btn btn-secondary bi-arrow-clockwise restart-btn" title="Restart" id="restart-form"></i>
-                    </div>
-                    <div class="more-fields">
-
                     </div>
                     
                   </form>
@@ -76,7 +74,6 @@
                         <th>Phone</th>
                         <th>More</th>
                         <th>Actions</th>
-                        <th></th>
                       </tr>  
                     </thead>
                     <tbody id="contact-list">
