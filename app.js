@@ -54,19 +54,33 @@ class Contacts {
   }
 }
 
+class Address {
+  constructor(street, streetNum, flatNum, city, state, postCode, country) {
+    this.street = street;
+    this.streetNum = streetNum;
+    this.flatNum = flatNum;
+    this.city = city;
+    this.state = state;
+    this.postCode = postCode;
+    this.country = country;
+  }
+}
+
 //UI class
 class UI {
   static displayContacts() {
     const contacts = Store.getContacts();
     contacts.forEach((contact) => UI.addContactToList(contact));
   }
+  //!!!!!!!
+  static displayAddress() {
+    const address = Store.getAddress();
+    address.forEach((address) => UI.addAddressToList(address))
+  }
 
   static addContactToList(contact) {
-    const list = document.getElementById("contact-list");
+    const list = $("#contact-list");
     const row = document.createElement("tr");
-    const flag = $(".iti__selected-flag").children[0].className;
-    // const dialCode = phoneInput.s.dialCode;
-
     row.id = `contact-id-${contact.id}`;
     row.className = "row-clear";
     row.innerHTML = `
@@ -74,12 +88,50 @@ class UI {
       <td>${contact.lastName}</td>
       <td>${contact.email}</td>
       <td>${contact.dialCode} ${contact.phone}</td>
+      <td><i class="btn text-info bi bi-three-dots"></i> </td>
       <td>
-      <i id="btn-edit-${contact.id}" title="Edit" data-contact-id="${contact.id}" class="bi bi-pencil btn btn-info btn-xs edit"></i>
-      <i id="btn-delete-${contact.id}" title="Delete" class="bi bi-trash btn btn-primary btn-xs delete"></i>
+        <i id="btn-edit-${contact.id}" title="Edit" data-contact-id="${contact.id}" class="bi bi-pencil btn btn-info btn-xs edit"></i>
+        <i id="btn-delete-${contact.id}" title="Delete" class="bi bi-trash btn btn-primary btn-xs delete"></i>
       </td>
       `;
     list.appendChild(row);
+  }
+
+  static addAddressToForm({ address }) {
+    const form = $(".more-fields");
+    const fieldsGroup = document.createElement('div');
+    fieldsGroup.className = "address-group"
+    fieldsGroup.innerHTML = `
+    <div class="form-group mb-3">
+      <label for="${address.street}" class="form-label">Street</label>
+      <input type="text" class="form-control" id="${address.street}" name="${address.street}"></input>
+    </div>
+    <div class="form-group mb-3">
+      <label for="${address.streetNum}" class="form-label">Street Number</label>
+      <input type="text" class="form-control" id="${address.streetNum}" name="${address.streetNum}"></input>
+    </div>
+    <div class="form-group mb-3">
+      <label for="${address.flatNum}" class="form-label">Flat Number</label>
+      <input type="text" class="form-control" id="${address.flatNum}" name="${address.flatNum}"></input>
+    </div>
+    <div class="form-group mb-3">
+      <label for="${address.city}" class="form-label">City</label>
+      <input type="text" class="form-control" id="${address.city}" name="${address.city}"></input>
+    </div>
+    <div class="form-group mb-3">
+      <label for="${address.state}" class="form-label">State</label>
+      <input type="text" class="form-control" id="${address.state}" name="${address.state}"></input>
+    </div>
+    <div class="form-group mb-3">
+      <label for="${address.postCode}" class="form-label">Post Code</label>
+      <input type="text" class="form-control" id="${address.postCode}" name="${address.postCode}"></input>
+    </div>
+    <div class="form-group mb-3">
+      <label for="${address.country}" class="form-label">Country</label>
+      <input type="text" class="form-control" id="${address.country}" name="${address.country}"></input>
+    </div>
+    `;
+    form.appendChild(fieldsGroup);
   }
 
   static editContactInList(newContact) {
@@ -133,7 +185,7 @@ class Store {
 
   static addContact(contact) {
     const contacts = Store.getContacts();
-    contacts.push(contact);
+    contacts.unshift(contact);
     Store.replaceContacts(contacts);
   }
 
@@ -196,7 +248,6 @@ $(".contact-form").addEventListener("submit", (event) => {
 
       //change back row style
       $(`#contact-id-${contactId}`).className = "table";
-      
     } else {
       UI.addContactToList(contact);
       Store.addContact(contact);
@@ -210,7 +261,7 @@ $(".contact-form").addEventListener("submit", (event) => {
 $("#restart-form").addEventListener("click", (event) => {
   event.preventDefault();
 
-//restart while submiting
+  //restart while submiting
   if (
     event.target.id === "restart-form" &&
     $(".submit-btn").textContent === "Add Contact"
@@ -218,7 +269,7 @@ $("#restart-form").addEventListener("click", (event) => {
     UI.clearFields();
   }
 
-//restart while editing
+  //restart while editing
   else if (
     event.target.id === "restart-form" &&
     $(".submit-btn").textContent === "Update"
@@ -227,7 +278,7 @@ $("#restart-form").addEventListener("click", (event) => {
     $(`#contact-id-${contactId}`).className = "table";
     $(`#btn-delete-${contactId}`).removeAttribute("disabled", "false");
     $(".iti__selected-flag").children[0].className = "iti__flag iti__pl";
-    $(".iti__selected-dial-code").textContent = "+48"
+    $(".iti__selected-dial-code").textContent = "+48";
 
     UI.clearFields();
   }

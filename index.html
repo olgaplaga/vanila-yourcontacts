@@ -35,8 +35,6 @@
               <div class="col-md-10 col-lg-8 mt-5">
                 <form class="contact-form"> 
                   <input type="hidden" id="contact-id" name="id">
-
-
                     <div class="form-group mb-3">
                       <label for="first-name" class="form-label">First Name</label>
                       <input type="text" class="form-control" id="first-name" name="first-name">
@@ -53,9 +51,19 @@
                       <label for="phone-number" class="form-label">Phone Number</label><br>
                       <input type="tel" class="form-control" id="phone-number" name="phone-number[main]">
                     </div>
+                    <div class="mb-5 mt-5">
+                      <h4>
+                        <i class="btn text-success bi bi-plus-circle-fill"> More</i>
+                      
+
+                      </h4>
+                    </div>
                     <div class="form-buttons">
                       <button type="submit" class="btn btn-warning submit-btn">Add Contact</button>
                       <i type="button" class="btn btn-secondary bi-arrow-clockwise restart-btn" title="Restart" id="restart-form"></i>
+                    </div>
+                    <div class="more-fields">
+
                     </div>
                     
                   </form>
@@ -66,6 +74,7 @@
                         <th>Last</th>
                         <th>Email</th>
                         <th>Phone</th>
+                        <th>More</th>
                         <th>Actions</th>
                         <th></th>
                       </tr>  
