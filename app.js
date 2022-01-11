@@ -190,13 +190,13 @@ $(".contact-form").addEventListener("submit", (event) => {
       UI.showAlert("Contact Edited!", "info");
       $(".submit-btn").classList = "btn btn-block btn-warning submit-btn";
       $(".submit-btn").textContent = "Add Contact";
-      
+
       // bring back delete after updating
       $(`#btn-delete-${contactId}`).removeAttribute("disabled", "false");
-      
 
       //change back row style
       $(`#contact-id-${contactId}`).className = "table";
+      
     } else {
       UI.addContactToList(contact);
       Store.addContact(contact);
@@ -207,13 +207,33 @@ $(".contact-form").addEventListener("submit", (event) => {
 });
 
 //Restart form button
-$(".contact-form").addEventListener("click", (event) => {
+$("#restart-form").addEventListener("click", (event) => {
   event.preventDefault();
-  UI.clearFields();
-  console.log(event.target.classList)
-  if (event.target.classList.contains("restart-form")) {
+
+//restart while submiting
+  if (
+    event.target.id === "restart-form" &&
+    $(".submit-btn").textContent === "Add Contact"
+  ) {
+    UI.clearFields();
   }
-})
+
+//restart while editing
+  else if (
+    event.target.id === "restart-form" &&
+    $(".submit-btn").textContent === "Update"
+  ) {
+    const contactId = $("#contact-id").value;
+    $(`#contact-id-${contactId}`).className = "table";
+    $(`#btn-delete-${contactId}`).removeAttribute("disabled", "false");
+    $(".iti__selected-flag").children[0].className = "iti__flag iti__pl";
+    $(".iti__selected-dial-code").textContent = "+48"
+
+    UI.clearFields();
+  }
+  $(".submit-btn").classList = "btn btn-block btn-warning submit-btn";
+  $(".submit-btn").textContent = "Add Contact";
+});
 
 //Delete and Edit Button Functionality
 
@@ -223,17 +243,14 @@ $("#contact-list").addEventListener("click", (event) => {
     event.target.id.indexOf("btn-delete-") === 0 &&
     !event.target.hasAttribute("disabled")
   ) {
-    console.log(event.target);
     UI.deleteContact(event.target);
     UI.showAlert("Contact Deleted!", "danger");
     Store.removeContact(event.target.id);
-
   } else if (
     event.target.id &&
     event.target.id.indexOf("btn-edit") === 0 &&
     $(".submit-btn").textContent === "Add Contact"
   ) {
-
     //Take data from edited field by id
     const id = event.target.dataset.contactId;
     const contact = Store.getContactById(id);
@@ -256,16 +273,16 @@ $("#contact-list").addEventListener("click", (event) => {
 
     //Unable to delete edited data
     $(`#btn-delete-${contact.id}`).setAttribute("disabled", "true");
-    console.log($(`#btn-delete-${contact.id}`))
+    console.log($(`#btn-delete-${contact.id}`));
 
     //edit validation - can not double click edit before updating change
   } else if (
     event.target.id &&
     event.target.id.indexOf("btn-edit") === 0 &&
     $(".submit-btn").textContent === "Update"
-    ) {
-      event.preventDefault();
-      console.log(event.target)
+  ) {
+    event.preventDefault();
+    console.log(event.target);
     $(".submit-btn").classList.remove("shake");
     $(".submit-btn").offsetWidth;
     $(".submit-btn").classList.add("shake");
