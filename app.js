@@ -137,7 +137,7 @@ class UI {
 
   static addAddressToList(contact) {
     const oldTableBody = $("#contact-list");
-    const oldRow = $(`#contact-id-${contact}`);
+    const oldRow = $(`#contact-id-${contact.id}`);
     console.log(contact)
     console.log(oldRow);
     const newRow = document.createElement("tr");
@@ -149,9 +149,9 @@ class UI {
     const newRowAddress = document.createElement("tr");
     newRowAddress.className = ``;
     //tu dodać zmienną zawierającą address id
-    console.log(contact)
-    newRowAddress.id = `address-id-${contact.address.addressId}`
-    newTable.className = "table mt-2 mb-0";
+    console.log(contact.id)
+    newRowAddress.id = `address-id-${contact.address}`
+    newTable.className = "table mt-2 mb-2";
     newData.setAttribute("colspan", "6");
 
     newRowHeader.innerHTML = `
@@ -172,7 +172,6 @@ class UI {
     <td>${contact.address.state}</td>
     <td>${contact.address.postCode}</td>
     <td>${contact.address.country}</td>
-
     `
 
     newTableBody.appendChild(newRowAddress);
@@ -181,7 +180,7 @@ class UI {
     newTable.appendChild(newTableBody);
     newData.appendChild(newTable);
     newRow.appendChild(newData);
-    // oldTableBody.insertBefore(newRow, oldRow.nextSibling);
+    oldTableBody.insertBefore(newRow, oldRow.nextSibling);
   }
 
   static addAddressForm() {
@@ -190,7 +189,7 @@ class UI {
     group.className = `address mt-5`;
     group.innerHTML = `
     <h4>Address</h4>
-    <input type="hidden" id="address-id" name="id" value>
+    <input type="hidden" id="address-id" name="id" value="${Contacts.id()}">
     `;
     // console.log(id());
     for (const key in addressFormData) {
@@ -226,6 +225,7 @@ class UI {
     const lastName = ($("#last-name").value = "");
     const email = ($("#email").value = "");
     const phone = ($("#phone-number").value = "");
+
     const addressId = $("#address-id").value = "";
     const street = $("#street").value = "";
     const streetNum = $("#street-num").value = "";
@@ -306,6 +306,7 @@ $(".contact-form").addEventListener("submit", (event) => {
 
   //nie dziala address-id
   const addressId = $("#address-id").value;
+  console.log(addressId)
   const street = $("#street").value;
   const streetNum = $("#street-num").value;
   const flatNum = $("#flat-number").value;
@@ -366,8 +367,8 @@ $(".contact-form").addEventListener("submit", (event) => {
       $(`#contact-id-${contactId}`).className = "table";
     } else {
       UI.addContactToList(contact);
-      UI.addAddressToList(contact);
       console.log(contact)
+      UI.addAddressToList(contact);
       Store.addContact(contact);
       UI.showAlert("Contact Added!", "success");
     }
@@ -447,19 +448,22 @@ $("#contact-list").addEventListener("click", (event) => {
 
     //edit validation - can not double click edit before updating change
   } else if (
+    
     event.target.id &&
     event.target.id.indexOf("btn-edit") === 0 &&
     $(".submit-btn").textContent === "Update"
   ) {
+    
     event.preventDefault();
     $(".submit-btn").classList.remove("shake");
     $(".submit-btn").offsetWidth;
     $(".submit-btn").classList.add("shake");
+
   } else if (event.target.id && event.target.id.indexOf("btn-more-") === 0) {
     event.target.classList = "btn text-danger bi bi-three-dots";
-    const contactId = event.target.id.slice(9);
-    console.log(contactId);
-    UI.addAddressToList(contactId);
+    const id = event.target.id.slice(9);
+    const contact = Store.getContactById(id);
+    UI.addAddressToList(contact);
   }
 });
 
