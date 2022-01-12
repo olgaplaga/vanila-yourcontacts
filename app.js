@@ -36,7 +36,6 @@ function id() {
   return uuid;
 }
 
-let selectedRow = null;
 
 function $(selector) {
   return document.querySelector(selector);
@@ -89,6 +88,15 @@ class Address {
     this.country = country;
   }
 }
+const addressFormData = {
+  street: ["Street", "street", "text"],
+  streetNum: ["Street Number", "street-num", "number"],
+  flatNum: ["Flat Number", "flat-number", "number"],
+  city: ["City", "city", "text"],
+  state: ["State", "state", "text"],
+  postCode: ["Postal Code", "postal-code", "text"],
+  country: ["Country", "country", "text"],
+};
 
 //UI class
 class UI {
@@ -112,7 +120,7 @@ class UI {
       <td>${contact.lastName}</td>
       <td>${contact.email}</td>
       <td>${contact.dialCode} ${contact.phone}</td>
-      <td><i class="btn text-info bi bi-three-dots"></i> </td>
+      <td><i id="btn-more-${contact.id}" class="btn text-info bi bi-three-dots"></i> </td>
       <td>
         <i id="btn-edit-${contact.id}" title="Edit" data-contact-id="${contact.id}" class="bi bi-pencil btn btn-info btn-xs edit"></i>
         <i id="btn-delete-${contact.id}" title="Delete" class="bi bi-trash btn btn-primary btn-xs delete"></i>
@@ -121,17 +129,24 @@ class UI {
     list.appendChild(row);
   }
 
-  static addAddressForm() {
-    const addressFormData = {
-      street: ["Street", "street", "text"],
-      streetNum: ["Street Number", "street-num", "number"],
-      flatNum: ["Flat Number", "flat-number", "number"],
-      city: ["City", "city", "text"],
-      state: ["State", "state", "text"],
-      postCode: ["Postal Code", "postal-code", "text"],
-      country: ["Country", "country", "text"],
-    };
+  static addAddressToList(contactId) {
+    const oldRow = $(`#contact-id-${contactId}`)
+    const newRow = document.createElement('tr');
+    // const newHeader = document.createElement('th');
+    newRow.innerHTML = `
+    <th>Street</th>
+    <th>Str.Number</th>
+    <th>Flat</th>
+    <th>City</th>
+    <th>State</th>
+    <th>Post Code</th>
+    <th>Country</th>
+    `
+   oldRow.appendChild(newRow);
+  }
 
+  static addAddressForm() {
+    
     const form = $(".more-fields");
     const group = document.createElement("div")
     group.className = `address mt-5`
@@ -147,7 +162,6 @@ class UI {
 
         <label for="${addressFormData[key][1]}" class="form-label">${addressFormData[key][0]}</label>
         <input type="${addressFormData[key][2]}" class="form-control" id="${addressFormData[key][1]}" name="${addressFormData[key][1]}"></input>
-         
         `;
         form.appendChild(group);
         group.appendChild(fieldsGroup)
@@ -299,6 +313,8 @@ $("#restart-form").addEventListener("click", (event) => {
     $(".submit-btn").textContent === "Update"
   ) {
     const contactId = $("#contact-id").value;
+    console.log(contactId)
+    console.log(contactId)
     $(`#contact-id-${contactId}`).className = "table";
     $(`#btn-delete-${contactId}`).removeAttribute("disabled", "false");
     $(".iti__selected-flag").children[0].className = "iti__flag iti__pl";
@@ -348,7 +364,6 @@ $("#contact-list").addEventListener("click", (event) => {
 
     //Unable to delete edited data
     $(`#btn-delete-${contact.id}`).setAttribute("disabled", "true");
-    console.log($(`#btn-delete-${contact.id}`));
 
     //edit validation - can not double click edit before updating change
   } else if (
@@ -357,13 +372,23 @@ $("#contact-list").addEventListener("click", (event) => {
     $(".submit-btn").textContent === "Update"
   ) {
     event.preventDefault();
-    console.log(event.target);
     $(".submit-btn").classList.remove("shake");
     $(".submit-btn").offsetWidth;
     $(".submit-btn").classList.add("shake");
   }
+
+  else if (
+    event.target.id &&
+    event.target.id.indexOf("btn-more-") === 0
+  ) {
+    const contactId = event.target.id.slice(9)
+    console.log(contactId)
+    UI.addAddressToList(contactId);
+
+  }
 });
 
+//Add address form
 $("#more-btn").addEventListener("click", (event) => {
   event.preventDefault();
   //  if(event.target.id === )
