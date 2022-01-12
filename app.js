@@ -36,7 +36,6 @@ function id() {
   return uuid;
 }
 
-
 function $(selector) {
   return document.querySelector(selector);
 }
@@ -63,7 +62,8 @@ class Contacts {
     email,
     flagCode,
     dialCode,
-    phone
+    phone,
+    address
   ) {
     this.id = id || id();
     this.firstName = firstName;
@@ -72,22 +72,19 @@ class Contacts {
     this.flagCode = flagCode;
     this.dialCode = dialCode;
     this.phone = phone;
+    this.address = {
+      id: id || id(),
+      street: street,
+      streetNum: streetNum,
+      flatNum: flatNum,
+      city: city,
+      state: state,
+      postCode: postCode,
+      country: country,
+    };
   }
-  
 }
 
-class Address {
-  constructor(id = null, street, streetNum, flatNum, city, state, postCode, country) {
-    this.id = id || id();
-    this.street = street;
-    this.streetNum = streetNum;
-    this.flatNum = flatNum;
-    this.city = city;
-    this.state = state;
-    this.postCode = postCode;
-    this.country = country;
-  }
-}
 const addressFormData = {
   street: ["Street", "street", "text"],
   streetNum: ["Street Number", "street-num", "number"],
@@ -131,16 +128,19 @@ class UI {
 
   // see : https://getbootstrap.com/docs/5.1/content/tables/#nesting
 
-  static addAddressToList(contactId) {
-    const oldTableBody = $("#contact-list")
-    const oldRow = $(`#contact-id-${contactId}`)
-    const newRow = document.createElement('tr')
-    const newData = document.createElement('td');
-    const newTable = document.createElement('table')
-    const newRowHead = document.createElement('thead');
-    const newRowHeader = document.createElement('tr')
-    newTable.className = "table mt-4 mb-0"
-    newData.setAttribute("colspan", "6")
+  static addAddressToList(contact) {
+    const oldTableBody = $("#contact-list");
+    const oldRow = $(`#contact-id-${contact}`);
+    const newRow = document.createElement("tr");
+    const newData = document.createElement("td");
+    const newTable = document.createElement("table");
+    const newRowHead = document.createElement("thead");
+    const newRowHeader = document.createElement("tr");
+    const newTableBody = document.createElement("tbody");
+    const newRowAddress = document.createElement("tr");
+    newRowAddress.className = ``;
+    newTable.className = "table mt-2 mb-0";
+    newData.setAttribute("colspan", "6");
 
     newRowHeader.innerHTML = `
     <th>Street</th>
@@ -150,42 +150,48 @@ class UI {
     <th>State</th>
     <th>Post Code</th>
     <th>Country</th>
-    `
-    newRowHead.appendChild(newRowHeader)
-    newTable.appendChild(newRowHead)
+    `;
+    // newRowAddress.innerHTML = `
+    // <td>${contact.address.street}</td>
+    // <td>${contact.address.streetNum}</td>
+    // <td>${contact.address.flatNum}</td>
+    // <td>${contact.address.city}</td>
+    // <td>${contact.address.state}</td>
+    // <td>${contact.address.postCode}</td>
+    // <td>${contact.address.country}</td>
+
+    // `
+
+    newTableBody.appendChild(newRowAddress);
+    newRowHead.appendChild(newRowHeader);
+    newTable.appendChild(newRowHead);
+    newTable.appendChild(newTableBody);
     newData.appendChild(newTable);
-    newRow.appendChild(newData)
-    oldTableBody.insertBefore(newRow, oldRow.nextSibling)
-    
-    console.log(oldTableBody)
+    newRow.appendChild(newData);
+    oldTableBody.insertBefore(newRow, oldRow.nextSibling);
   }
 
   static addAddressForm() {
-    
     const form = $(".more-fields");
-    const group = document.createElement("div")
-    group.className = `col-auto address mt-5`
-    group.innerHTML =`
+    const group = document.createElement("div");
+    group.className = `address mt-5`;
+    group.innerHTML = `
     <h4>Address</h4>
     <input type="hidden" id="${id()}" name="id">
-    `
-    console.log(id())
+    `;
+    console.log(id());
     for (const key in addressFormData) {
       const fieldsGroup = document.createElement("div");
-      fieldsGroup.className = "col-auto form-group mb-3";
+      fieldsGroup.className = "form-group mb-3";
       fieldsGroup.innerHTML = `
 
         <label for="${addressFormData[key][1]}" class="form-label">${addressFormData[key][0]}</label>
         <input type="${addressFormData[key][2]}" class="form-control" id="${addressFormData[key][1]}" name="${addressFormData[key][1]}"></input>
         `;
-        form.appendChild(group);
-        group.appendChild(fieldsGroup)
+      form.appendChild(group);
+      group.appendChild(fieldsGroup);
     }
   }
-
-
-
-
 
   static editContactInList(newContact) {
     const contacts = Store.getContacts();
@@ -266,6 +272,7 @@ class Store {
 //Display actual Local Storage
 document.addEventListener("DOMContentLoaded", UI.displayContacts);
 
+
 //Add Contact Btn Functionality
 $(".contact-form").addEventListener("submit", (event) => {
   event.preventDefault();
@@ -277,6 +284,18 @@ $(".contact-form").addEventListener("submit", (event) => {
   const dialCode = $(".iti__selected-dial-code").textContent;
   const flagCode = $(".iti__selected-flag").children[0].className;
 
+  //address fields
+  const address = {
+    addressId: $("#address-id").value,
+    street : $("#street").value,
+    streetNum : $("#street-num").value,
+    flatNum : $("#flat-num").value,
+    city : $("#city").value,
+    state : $("#state").value,
+    postCode : $("#postal-code").value,
+    country : $("#country").value,
+  }
+      
   //Form validation
   if (firstName === "" || lastName === "" || email === "" || phone === "") {
     UI.showAlert("Please fill all fields", "primary");
@@ -288,7 +307,8 @@ $(".contact-form").addEventListener("submit", (event) => {
       email,
       flagCode,
       dialCode,
-      phone
+      phone, 
+      address,
     );
     if (contactId) {
       UI.editContactInList(contact);
@@ -303,6 +323,7 @@ $(".contact-form").addEventListener("submit", (event) => {
       $(`#contact-id-${contactId}`).className = "table";
     } else {
       UI.addContactToList(contact);
+      UI.addAddressToList(contact)
       Store.addContact(contact);
       UI.showAlert("Contact Added!", "success");
     }
@@ -328,8 +349,8 @@ $("#restart-form").addEventListener("click", (event) => {
     $(".submit-btn").textContent === "Update"
   ) {
     const contactId = $("#contact-id").value;
-    console.log(contactId)
-    console.log(contactId)
+    console.log(contactId);
+    console.log(contactId);
     $(`#contact-id-${contactId}`).className = "table";
     $(`#btn-delete-${contactId}`).removeAttribute("disabled", "false");
     $(".iti__selected-flag").children[0].className = "iti__flag iti__pl";
@@ -390,23 +411,16 @@ $("#contact-list").addEventListener("click", (event) => {
     $(".submit-btn").classList.remove("shake");
     $(".submit-btn").offsetWidth;
     $(".submit-btn").classList.add("shake");
-  }
-
-  else if (
-    event.target.id &&
-    event.target.id.indexOf("btn-more-") === 0
-  ) {
-    event.target.classList = "btn text-danger bi bi-three-dots"
-    const contactId = event.target.id.slice(9)
-    console.log(contactId)
+  } else if (event.target.id && event.target.id.indexOf("btn-more-") === 0) {
+    event.target.classList = "btn text-danger bi bi-three-dots";
+    const contactId = event.target.id.slice(9);
+    console.log(contactId);
     UI.addAddressToList(contactId);
-
   }
 });
 
 //Add address form
 $("#more-btn").addEventListener("click", (event) => {
   event.preventDefault();
-  //  if(event.target.id === )
   UI.addAddressForm();
 });
