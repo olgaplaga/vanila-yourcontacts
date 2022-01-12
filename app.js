@@ -1,23 +1,6 @@
-const addressExample = [
-  {
-    street: "filipowska",
-    streetNum: "5",
-    flatNum: "",
-    city: "Bakałarzewo",
-    state: "Podlaskie",
-    postCode: "16-423",
-    country: "Polska",
-  },
-  {
-    street: "Odolanska",
-    streetNum: "14",
-    flatNum: "11",
-    city: "Warszawa",
-    state: "Mazowieckie",
-    postCode: "02-561",
-    country: "Polska",
-  },
-];
+function create(element){
+  return document.createElement(element)
+}
 
 function $(selector) {
   return document.querySelector(selector);
@@ -47,14 +30,7 @@ class Contacts {
     dialCode,
     phone,
     address,
-    // addressId,
-    // street,
-    // streetNum,
-    // flatNum,
-    // city,
-    // state,
-    // postCode,
-    // country
+    
   ) {
     this.id = id || Contacts.id();
     this.firstName = firstName;
@@ -64,14 +40,7 @@ class Contacts {
     this.dialCode = dialCode;
     this.phone = phone;
     this.address = address;
-    // this.addressId = addressId || Contacts.id();
-    // this.street = street;
-    // this.streetNum = streetNum;
-    // this.flatNum = flatNum;
-    // this.city = city;
-    // this.state = state;
-    // this.postCode = postCode;
-    // this.country = country;
+  
   }
 
   // see: https://gist.github.com/jsmithdev/1f31f9f3912d40f6b60bdc7e8098ee9f
@@ -116,7 +85,7 @@ class UI {
 
   static addContactToList(contact) {
     const list = $("#contact-list");
-    const row = document.createElement("tr");
+    const row = create("tr");
     row.id = `contact-id-${contact.id}`;
     row.className = "row-clear";
     row.innerHTML = `
@@ -138,19 +107,15 @@ class UI {
   static addAddressToList(contact) {
     const oldTableBody = $("#contact-list");
     const oldRow = $(`#contact-id-${contact.id}`);
-    console.log(contact)
-    console.log(oldRow);
-    const newRow = document.createElement("tr");
-    const newData = document.createElement("td");
-    const newTable = document.createElement("table");
-    const newRowHead = document.createElement("thead");
-    const newRowHeader = document.createElement("tr");
-    const newTableBody = document.createElement("tbody");
-    const newRowAddress = document.createElement("tr");
+    const newRow = create("tr");
+    const newData = create("td");
+    const newTable = create("table");
+    const newRowHead = create("thead");
+    const newRowHeader = create("tr");
+    const newTableBody = create("tbody");
+    const newRowAddress = create("tr");
     newRowAddress.className = ``;
-    //tu dodać zmienną zawierającą address id
-    console.log(contact.id)
-    newRowAddress.id = `address-id-${contact.address}`
+    newRowAddress.id = `address-id-${contact.address.addressId}`
     newTable.className = "table mt-2 mb-2";
     newData.setAttribute("colspan", "6");
 
@@ -185,18 +150,16 @@ class UI {
 
   static addAddressForm() {
     const form = $(".more-fields");
-    const group = document.createElement("div");
+    const group = create("div");
     group.className = `address mt-5`;
     group.innerHTML = `
     <h4>Address</h4>
     <input type="hidden" id="address-id" name="id" value="${Contacts.id()}">
     `;
-    // console.log(id());
     for (const key in addressFormData) {
-      const fieldsGroup = document.createElement("div");
+      const fieldsGroup = create("div");
       fieldsGroup.className = "form-group mb-3";
       fieldsGroup.innerHTML = `
-
         <label for="${addressFormData[key][1]}" class="form-label">${addressFormData[key][0]}</label>
         <input type="${addressFormData[key][2]}" class="form-control" id="${addressFormData[key][1]}" name="${addressFormData[key][1]}" value></input>
         `;
@@ -220,11 +183,11 @@ class UI {
   }
 
   static clearFields() {
-    const contactId = ($("#contact-id").value = "");
-    const firstName = ($("#first-name").value = "");
-    const lastName = ($("#last-name").value = "");
-    const email = ($("#email").value = "");
-    const phone = ($("#phone-number").value = "");
+    const contactId = $("#contact-id").value = "";
+    const firstName = $("#first-name").value = "";
+    const lastName = $("#last-name").value = "";
+    const email = $("#email").value = "";
+    const phone = $("#phone-number").value = "";
 
     const addressId = $("#address-id").value = "";
     const street = $("#street").value = "";
@@ -241,13 +204,14 @@ class UI {
   }
 
   static showAlert(message, className) {
-    const div = document.createElement("div");
+    const div = create("div");
+    const form = $(".contact-form");
     div.className = `alert alert-${className} mt-5`;
     div.appendChild(document.createTextNode(message));
-    const form = document.querySelector(".contact-form");
     form.appendChild(div);
+
     setTimeout(() => {
-      document.querySelector(".alert").remove();
+      $(".alert").remove();
     }, 2000);
   }
 }
@@ -281,7 +245,6 @@ class Store {
       }
     });
 
-    //   contacts.filter((contact) => {contact.phone !== phone})
     localStorage.setItem("contacts", JSON.stringify(contacts));
   }
 
@@ -306,7 +269,6 @@ $(".contact-form").addEventListener("submit", (event) => {
 
   //nie dziala address-id
   const addressId = $("#address-id").value;
-  console.log(addressId)
   const street = $("#street").value;
   const streetNum = $("#street-num").value;
   const flatNum = $("#flat-number").value;
@@ -325,10 +287,6 @@ $(".contact-form").addEventListener("submit", (event) => {
     postCode: postCode,
     country: country,
   };
-  // console.log(country)
-  // console.log(address.country)
-  // console.log(address.street)
-  // console.log(address)
 
   //Form validation
   if (firstName === "" || lastName === "" || email === "" || phone === "") {
@@ -343,18 +301,8 @@ $(".contact-form").addEventListener("submit", (event) => {
       dialCode,
       phone,
       address,
-      // addressId,
-      // street,
-      // streetNum,
-      // flatNum,
-      // city,
-      // state,
-      // postCode,
-      // country
     );
-    console.log(contact);
     if (contactId) {
-      console.log(contact);
       UI.editContactInList(contact);
       UI.showAlert("Contact Edited!", "info");
       $(".submit-btn").classList = "btn btn-block btn-warning submit-btn";
@@ -367,7 +315,6 @@ $(".contact-form").addEventListener("submit", (event) => {
       $(`#contact-id-${contactId}`).className = "table";
     } else {
       UI.addContactToList(contact);
-      console.log(contact)
       UI.addAddressToList(contact);
       Store.addContact(contact);
       UI.showAlert("Contact Added!", "success");
@@ -394,8 +341,6 @@ $("#restart-form").addEventListener("click", (event) => {
     $(".submit-btn").textContent === "Update"
   ) {
     const contactId = $("#contact-id").value;
-    console.log(contactId);
-    console.log(contactId);
     $(`#contact-id-${contactId}`).className = "table";
     $(`#btn-delete-${contactId}`).removeAttribute("disabled", "false");
     $(".iti__selected-flag").children[0].className = "iti__flag iti__pl";
@@ -423,6 +368,7 @@ $("#contact-list").addEventListener("click", (event) => {
     event.target.id.indexOf("btn-edit") === 0 &&
     $(".submit-btn").textContent === "Add Contact"
   ) {
+
     //Take data from edited field by id
     const id = event.target.dataset.contactId;
     const contact = Store.getContactById(id);
