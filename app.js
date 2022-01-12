@@ -129,36 +129,42 @@ class UI {
     list.appendChild(row);
   }
 
+  // see : https://getbootstrap.com/docs/5.1/content/tables/#nesting
+
   static addAddressToList(contactId) {
-    console.log(contactId)
+    const oldTableBody = $("#contact-list")
     const oldRow = $(`#contact-id-${contactId}`)
-    
-    const tableBody = $("#contact-list")
-    console.log(tableBody)
+    const newRow = document.createElement('tr')
+    const newData = document.createElement('td');
+    const newTable = document.createElement('table')
     const newRowHead = document.createElement('thead');
     const newRowHeader = document.createElement('tr')
+    newTable.className = "table mt-4 mb-0"
+    newData.setAttribute("colspan", "6")
 
-    newRowHeader.className = "table-hover new-table mt-5"
-    // const newHeader = document.createElement('th');
     newRowHeader.innerHTML = `
     <th>Street</th>
-    <th>Str.Number</th>
+    <th>No.</th>
     <th>Flat</th>
     <th>City</th>
     <th>State</th>
     <th>Post Code</th>
     <th>Country</th>
     `
-    tableBody.insertBefore(newRowHeader, oldRow.nextSibling)
-  //  newRowHead.appendChild(newRowHeader) 
-  //  oldRow.appendChild(newRowHead);
+    newRowHead.appendChild(newRowHeader)
+    newTable.appendChild(newRowHead)
+    newData.appendChild(newTable);
+    newRow.appendChild(newData)
+    oldTableBody.insertBefore(newRow, oldRow.nextSibling)
+    
+    console.log(oldTableBody)
   }
 
   static addAddressForm() {
     
     const form = $(".more-fields");
     const group = document.createElement("div")
-    group.className = `address mt-5`
+    group.className = `col-auto address mt-5`
     group.innerHTML =`
     <h4>Address</h4>
     <input type="hidden" id="${id()}" name="id">
@@ -166,7 +172,7 @@ class UI {
     console.log(id())
     for (const key in addressFormData) {
       const fieldsGroup = document.createElement("div");
-      fieldsGroup.className = "form-group mb-3";
+      fieldsGroup.className = "col-auto form-group mb-3";
       fieldsGroup.innerHTML = `
 
         <label for="${addressFormData[key][1]}" class="form-label">${addressFormData[key][0]}</label>
