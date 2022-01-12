@@ -19,23 +19,6 @@ const addressExample = [
   },
 ];
 
-// see: https://gist.github.com/jsmithdev/1f31f9f3912d40f6b60bdc7e8098ee9f
-
-function id() {
-  let dt = new Date().getTime();
-
-  const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
-    /[xy]/g,
-    function (c) {
-      const r = (dt + Math.random() * 16) % 16 | 0;
-      dt = Math.floor(dt / 16);
-      return (c == "x" ? r : (r & 0x3) | 0x8).toString(16);
-    }
-  );
-
-  return uuid;
-}
-
 function $(selector) {
   return document.querySelector(selector);
 }
@@ -63,9 +46,11 @@ class Contacts {
     flagCode,
     dialCode,
     phone,
-    address
+    address,
+    addressId,
+    street, streetNum, flatNum, city, state, postCode, country
   ) {
-    this.id = id || id();
+    this.id = id || Contacts.id();
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
@@ -73,7 +58,7 @@ class Contacts {
     this.dialCode = dialCode;
     this.phone = phone;
     this.address = {
-      id: id || id(),
+      addressId: addressId || Contacts.id(),
       street: street,
       streetNum: streetNum,
       flatNum: flatNum,
@@ -82,6 +67,23 @@ class Contacts {
       postCode: postCode,
       country: country,
     };
+  }
+
+// see: https://gist.github.com/jsmithdev/1f31f9f3912d40f6b60bdc7e8098ee9f
+
+  static id() {
+    let dt = new Date().getTime();
+  
+    const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+      /[xy]/g,
+      function (c) {
+        const r = (dt + Math.random() * 16) % 16 | 0;
+        dt = Math.floor(dt / 16);
+        return (c == "x" ? r : (r & 0x3) | 0x8).toString(16);
+      }
+    );
+  
+    return uuid;
   }
 }
 
@@ -130,7 +132,8 @@ class UI {
 
   static addAddressToList(contact) {
     const oldTableBody = $("#contact-list");
-    const oldRow = $(`#contact-id-${contact}`);
+    const oldRow = $(`#contact-id-${contact.contactId}`);
+    console.log(oldRow)
     const newRow = document.createElement("tr");
     const newData = document.createElement("td");
     const newTable = document.createElement("table");
@@ -151,6 +154,7 @@ class UI {
     <th>Post Code</th>
     <th>Country</th>
     `;
+    
     // newRowAddress.innerHTML = `
     // <td>${contact.address.street}</td>
     // <td>${contact.address.streetNum}</td>
@@ -177,16 +181,16 @@ class UI {
     group.className = `address mt-5`;
     group.innerHTML = `
     <h4>Address</h4>
-    <input type="hidden" id="${id()}" name="id">
+    <input type="hidden" id="address-id" name="id" value>
     `;
-    console.log(id());
+    // console.log(id());
     for (const key in addressFormData) {
       const fieldsGroup = document.createElement("div");
       fieldsGroup.className = "form-group mb-3";
       fieldsGroup.innerHTML = `
 
         <label for="${addressFormData[key][1]}" class="form-label">${addressFormData[key][0]}</label>
-        <input type="${addressFormData[key][2]}" class="form-control" id="${addressFormData[key][1]}" name="${addressFormData[key][1]}"></input>
+        <input type="${addressFormData[key][2]}" class="form-control" id="${addressFormData[key][1]}" name="${addressFormData[key][1]}" value></input>
         `;
       form.appendChild(group);
       group.appendChild(fieldsGroup);
@@ -283,18 +287,29 @@ $(".contact-form").addEventListener("submit", (event) => {
   const phone = $("#phone-number").value;
   const dialCode = $(".iti__selected-dial-code").textContent;
   const flagCode = $(".iti__selected-flag").children[0].className;
-
-  //address fields
-  const address = {
-    addressId: $("#address-id").value,
-    street : $("#street").value,
-    streetNum : $("#street-num").value,
-    flatNum : $("#flat-num").value,
-    city : $("#city").value,
-    state : $("#state").value,
-    postCode : $("#postal-code").value,
-    country : $("#country").value,
+  
+  const addressId= $("#address-id").value
+  const street = $("#street").value
+  const streetNum = $("#street-num").value
+  const flatNum = $("#flat-number").value
+  const city = $("#city").value
+  const state = $("#state").value
+  const postCode = $("#postal-code").value
+  const country = $("#country").value
+  
+  let address = {
+    addressId: addressId,
+    street : street,
+    streetNum : streetNum,
+    flatNum : flatNum,
+    city : city,
+    state : state,
+    postCode : postCode,
+    country : country,
   }
+  console.log(country)
+  console.log(address.country)
+  console.log(address)
       
   //Form validation
   if (firstName === "" || lastName === "" || email === "" || phone === "") {
@@ -308,9 +323,12 @@ $(".contact-form").addEventListener("submit", (event) => {
       flagCode,
       dialCode,
       phone, 
-      address,
+      address, addressId, street, streetNum, flatNum, city, state, postCode, country
+       
     );
+    console.log(contact)
     if (contactId) {
+      console.log(contact)
       UI.editContactInList(contact);
       UI.showAlert("Contact Edited!", "info");
       $(".submit-btn").classList = "btn btn-block btn-warning submit-btn";
