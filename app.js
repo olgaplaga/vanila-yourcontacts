@@ -130,10 +130,17 @@ class UI {
   }
 
   static addAddressToList(contactId) {
+    console.log(contactId)
     const oldRow = $(`#contact-id-${contactId}`)
-    const newRow = document.createElement('tr');
+    
+    const tableBody = $("#contact-list")
+    console.log(tableBody)
+    const newRowHead = document.createElement('thead');
+    const newRowHeader = document.createElement('tr')
+
+    newRowHeader.className = "table-hover new-table mt-5"
     // const newHeader = document.createElement('th');
-    newRow.innerHTML = `
+    newRowHeader.innerHTML = `
     <th>Street</th>
     <th>Str.Number</th>
     <th>Flat</th>
@@ -142,7 +149,9 @@ class UI {
     <th>Post Code</th>
     <th>Country</th>
     `
-   oldRow.appendChild(newRow);
+    tableBody.insertBefore(newRowHeader, oldRow.nextSibling)
+  //  newRowHead.appendChild(newRowHeader) 
+  //  oldRow.appendChild(newRowHead);
   }
 
   static addAddressForm() {
@@ -381,6 +390,7 @@ $("#contact-list").addEventListener("click", (event) => {
     event.target.id &&
     event.target.id.indexOf("btn-more-") === 0
   ) {
+    event.target.classList = "btn text-danger bi bi-three-dots"
     const contactId = event.target.id.slice(9)
     console.log(contactId)
     UI.addAddressToList(contactId);

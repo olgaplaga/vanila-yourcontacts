@@ -23,8 +23,10 @@
   min-width: 90%;
   margin-right: 1%;
 }
-
-
+/* 
+.new-table {
+  display: block;
+} */
 
 @keyframes shake {
   10%,
