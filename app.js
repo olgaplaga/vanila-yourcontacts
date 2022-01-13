@@ -1,5 +1,5 @@
-function create(element){
-  return document.createElement(element)
+function create(element) {
+  return document.createElement(element);
 }
 
 function $(selector) {
@@ -29,8 +29,7 @@ class Contacts {
     flagCode,
     dialCode,
     phone,
-    address,
-    
+    address
   ) {
     this.id = id || Contacts.id();
     this.firstName = firstName;
@@ -40,7 +39,6 @@ class Contacts {
     this.dialCode = dialCode;
     this.phone = phone;
     this.address = address;
-  
   }
 
   // see: https://gist.github.com/jsmithdev/1f31f9f3912d40f6b60bdc7e8098ee9f
@@ -75,25 +73,24 @@ const addressFormData = {
 class UI {
   static displayContacts() {
     const contacts = Store.getContacts();
-    contacts.forEach((contact) => UI.addContactToList(contact));
-  }
-  //!!!!!!!
-  static displayAddress() {
-    const address = addressExample;
-    address.forEach((address) => UI.addAddressToList(address));
+    contacts.forEach((contact) => {
+      UI.addContactToList(contact);
+      UI.addAddressToList(contact);
+      console.log(contacts);
+    });
   }
 
   static addContactToList(contact) {
     const list = $("#contact-list");
     const row = create("tr");
     row.id = `contact-id-${contact.id}`;
-    row.className = "row-clear";
+    row.className = "row-folded";
     row.innerHTML = `
       <td>${contact.firstName}</td>
       <td>${contact.lastName}</td>
       <td>${contact.email}</td>
       <td>${contact.dialCode} ${contact.phone}</td>
-      <td><i id="btn-more-${contact.id}" class="btn text-info bi bi-three-dots"></i> </td>
+      <td><i id="btn-more-${contact.id}" class="btn text-info bi bi-three-dots toggle"></i> </td>
       <td>
         <i id="btn-edit-${contact.id}" title="Edit" data-contact-id="${contact.id}" class="bi bi-pencil btn btn-info btn-xs edit"></i>
         <i id="btn-delete-${contact.id}" title="Delete" class="bi bi-trash btn btn-primary btn-xs delete"></i>
@@ -105,6 +102,8 @@ class UI {
   // see : https://getbootstrap.com/docs/5.1/content/tables/#nesting
 
   static addAddressToList(contact) {
+    console.log("contact:", contact);
+
     const oldTableBody = $("#contact-list");
     const oldRow = $(`#contact-id-${contact.id}`);
     const newRow = create("tr");
@@ -113,11 +112,17 @@ class UI {
     const newRowHead = create("thead");
     const newRowHeader = create("tr");
     const newTableBody = create("tbody");
+    // console.log("newTableBody:", newTableBody)
+
     const newRowAddress = create("tr");
     newRowAddress.className = ``;
-    newRowAddress.id = `address-id-${contact.address.addressId}`
+    newRowAddress.id = `address-id-${contact.address.addressId}`;
     newTable.className = "table mt-2 mb-2";
     newData.setAttribute("colspan", "6");
+    (newRow.className = "add-address");
+    newRow.id = "address-container"
+    //  (newRow.style.display = "none");
+    console.log("newRow.style.display:", newRow.style);
 
     newRowHeader.innerHTML = `
     <th>Street</th>
@@ -137,7 +142,7 @@ class UI {
     <td>${contact.address.state}</td>
     <td>${contact.address.postCode}</td>
     <td>${contact.address.country}</td>
-    `
+    `;
 
     newTableBody.appendChild(newRowAddress);
     newRowHead.appendChild(newRowHeader);
@@ -146,7 +151,19 @@ class UI {
     newData.appendChild(newTable);
     newRow.appendChild(newData);
     oldTableBody.insertBefore(newRow, oldRow.nextSibling);
+    console.log(newRow);
+    console.log(oldRow);
+    console.log(oldRow.nextSibling);
   }
+  static toggle(address) {
+    if (address.className === "add-address") {
+      address.className = "remove-address";
+    } else {
+      address.className = "add-address";
+    };
+  };
+
+
 
   static addAddressForm() {
     const form = $(".more-fields");
@@ -183,20 +200,20 @@ class UI {
   }
 
   static clearFields() {
-    const contactId = $("#contact-id").value = "";
-    const firstName = $("#first-name").value = "";
-    const lastName = $("#last-name").value = "";
-    const email = $("#email").value = "";
-    const phone = $("#phone-number").value = "";
+    const contactId = ($("#contact-id").value = "");
+    const firstName = ($("#first-name").value = "");
+    const lastName = ($("#last-name").value = "");
+    const email = ($("#email").value = "");
+    const phone = ($("#phone-number").value = "");
 
-    const addressId = $("#address-id").value = "";
-    const street = $("#street").value = "";
-    const streetNum = $("#street-num").value = "";
-    const flatNum = $("#flat-number").value = "";
-    const city = $("#city").value = "";
-    const state = $("#state").value = "";
-    const postCode = $("#postal-code").value = "";
-    const country = $("#country").value = "";
+    const addressId = ($("#address-id").value = "");
+    const street = ($("#street").value = "");
+    const streetNum = ($("#street-num").value = "");
+    const flatNum = ($("#flat-number").value = "");
+    const city = ($("#city").value = "");
+    const state = ($("#state").value = "");
+    const postCode = ($("#postal-code").value = "");
+    const country = ($("#country").value = "");
   }
 
   static deleteContact(element) {
@@ -300,7 +317,7 @@ $(".contact-form").addEventListener("submit", (event) => {
       flagCode,
       dialCode,
       phone,
-      address,
+      address
     );
     if (contactId) {
       UI.editContactInList(contact);
@@ -368,7 +385,6 @@ $("#contact-list").addEventListener("click", (event) => {
     event.target.id.indexOf("btn-edit") === 0 &&
     $(".submit-btn").textContent === "Add Contact"
   ) {
-
     //Take data from edited field by id
     const id = event.target.dataset.contactId;
     const contact = Store.getContactById(id);
@@ -394,24 +410,47 @@ $("#contact-list").addEventListener("click", (event) => {
 
     //edit validation - can not double click edit before updating change
   } else if (
-    
     event.target.id &&
     event.target.id.indexOf("btn-edit") === 0 &&
     $(".submit-btn").textContent === "Update"
   ) {
-    
     event.preventDefault();
     $(".submit-btn").classList.remove("shake");
     $(".submit-btn").offsetWidth;
     $(".submit-btn").classList.add("shake");
 
+    //three dots more button
   } else if (event.target.id && event.target.id.indexOf("btn-more-") === 0) {
-    event.target.classList = "btn text-danger bi bi-three-dots";
-    const id = event.target.id.slice(9);
-    const contact = Store.getContactById(id);
-    UI.addAddressToList(contact);
+    console.log(event.target);
+    event.preventDefault();
+
+    const address = $("#address-container");
+    UI.toggle(address)
+
   }
 });
+
+// console.log(event.target.className)
+// const id = event.target.id.slice(9);
+// const contact = Store.getContactById(id);
+
+// UI.addAddressToList(contact);
+
+// } else if(event.target.id &&
+// event.target.className = "btn text-danger bi bi-three-dots";
+//   event.target.id.indexOf("btn-more-") === 0 &&
+
+// event.target.className == "btn text-info bi bi-three-dots")
+//   event.target.classList === "btn text-danger bi bi-three-dots") {
+//     console.log("event.target:", event.target)
+
+// }
+// const address = $(".add-address")
+// console.log("address:", address)
+// // UI.removeAddressFromList(address)
+// address.style.display = "none"
+
+// }
 
 //Add address form
 $("#more-btn").addEventListener("click", (event) => {

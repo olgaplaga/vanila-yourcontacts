@@ -28,6 +28,15 @@
   display: block;
 } */
 
+.add-address {
+  display: compact;
+}
+
+.remove-address {
+
+  display: none;
+}
+
 @keyframes shake {
   10%,
   90% {
