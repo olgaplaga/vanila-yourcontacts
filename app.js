@@ -90,7 +90,7 @@ class UI {
       <td>${contact.lastName}</td>
       <td>${contact.email}</td>
       <td>${contact.dialCode} ${contact.phone}</td>
-      <td><i id="btn-more-${contact.id}" class="btn text-info bi bi-three-dots toggle"></i> </td>
+      <td><i id="btn-more-${contact.id}" class="btn btn-xs text-info bi bi-three-dots toggle"></i> </td>
       <td>
         <i id="btn-edit-${contact.id}" title="Edit" data-contact-id="${contact.id}" class="bi bi-pencil btn btn-info btn-xs edit"></i>
         <i id="btn-delete-${contact.id}" title="Delete" class="bi bi-trash btn btn-primary btn-xs delete"></i>
@@ -114,7 +114,7 @@ class UI {
     const newTableBody = create("tbody");
 
     const newRowAddress = create("tr");
-    newRowAddress.className = ``;
+    newRowHeader.className = "table-secondary"
     newRowAddress.id = `address-id-${contact.address.addressId}`;
     newTable.className = "table mt-2 mb-2";
     newData.setAttribute("colspan", "6");
@@ -157,9 +157,16 @@ class UI {
     } else {
       address.className = "address-added";
     };
+
   };
 
-
+  // static toggleBtnCollor(button){
+  //   if (button.classList[2] === "text-info") {
+  //     button.classList[2] === "text-danger"
+  //   } else {
+  //     button.classList[2] === "text-danger"
+  //   }
+  // }
 
   static addAddressForm() {
     const form = $(".more-fields");
@@ -417,12 +424,14 @@ $("#contact-list").addEventListener("click", (event) => {
 
     //three dots more button
   } else if (event.target.id && event.target.id.indexOf("btn-more-") === 0) {
-    console.log(event.target);
     event.preventDefault();
+    const button = event.target
+    
+    
     const id = event.target.id.slice(9)
     const address = $(`#address-container-contact-id-${id}`);
-    // console.log(event.target.id)
     UI.toggleAddress(address)
+    
 
   }
 });
