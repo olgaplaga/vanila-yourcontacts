@@ -28,11 +28,11 @@
   display: block;
 } */
 
-.add-address {
+.address-added {
   display: compact;
 }
 
-.remove-address {
+.address-removed {
 
   display: none;
 }

@@ -112,17 +112,14 @@ class UI {
     const newRowHead = create("thead");
     const newRowHeader = create("tr");
     const newTableBody = create("tbody");
-    // console.log("newTableBody:", newTableBody)
 
     const newRowAddress = create("tr");
     newRowAddress.className = ``;
     newRowAddress.id = `address-id-${contact.address.addressId}`;
     newTable.className = "table mt-2 mb-2";
     newData.setAttribute("colspan", "6");
-    (newRow.className = "add-address");
-    newRow.id = "address-container"
-    //  (newRow.style.display = "none");
-    console.log("newRow.style.display:", newRow.style);
+    (newRow.className = "address-removed");
+    newRow.id = `address-container-contact-id-${contact.id}`
 
     newRowHeader.innerHTML = `
     <th>Street</th>
@@ -151,15 +148,14 @@ class UI {
     newData.appendChild(newTable);
     newRow.appendChild(newData);
     oldTableBody.insertBefore(newRow, oldRow.nextSibling);
-    console.log(newRow);
-    console.log(oldRow);
-    console.log(oldRow.nextSibling);
+  
   }
-  static toggle(address) {
-    if (address.className === "add-address") {
-      address.className = "remove-address";
+
+  static toggleAddress(address) {
+    if (address.className === "address-added") {
+      address.className = "address-removed";
     } else {
-      address.className = "add-address";
+      address.className = "address-added";
     };
   };
 
@@ -423,9 +419,10 @@ $("#contact-list").addEventListener("click", (event) => {
   } else if (event.target.id && event.target.id.indexOf("btn-more-") === 0) {
     console.log(event.target);
     event.preventDefault();
-
-    const address = $("#address-container");
-    UI.toggle(address)
+    const id = event.target.id.slice(9)
+    const address = $(`#address-container-contact-id-${id}`);
+    // console.log(event.target.id)
+    UI.toggleAddress(address)
 
   }
 });
