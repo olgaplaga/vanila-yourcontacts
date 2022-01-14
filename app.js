@@ -112,12 +112,11 @@ class UI {
 
     const newRowAddress = create("tr");
     newRowHeader.className = "table-secondary";
-    newRowAddress.id = `address-id-${contact.addresses[0].id}`;
     newTable.className = "table mt-2 mb-2";
     newData.setAttribute("colspan", "6");
-    newRow.className = "address-removed";
+    newRow.className = "address-added";
     newRow.id = `address-container-contact-id-${contact.id}`;
-
+    
     newRowHeader.innerHTML = `
     <th>Street</th>
     <th>No.</th>
@@ -127,18 +126,24 @@ class UI {
     <th>Post Code</th>
     <th>Country</th>
     `;
+    
+    contact.addresses.forEach((address) => {
 
-    newRowAddress.innerHTML = `
-    <td>${contact.addresses[0].street}</td>
-    <td>${contact.addresses[0].streetNum}</td>
-    <td>${contact.addresses[0].flatNum}</td>
-    <td>${contact.addresses[0].city}</td>
-    <td>${contact.addresses[0].state}</td>
-    <td>${contact.addresses[0].postCode}</td>
-    <td>${contact.addresses[0].country}</td>
-    `;
+      newRowAddress.id = `address-id-${address.id}`;
+      newRowAddress.innerHTML = `
+      <td>${address.street}</td>
+      <td>${address.streetNum}</td>
+      <td>${address.flatNum}</td>
+      <td>${address.city}</td>
+      <td>${address.state}</td>
+      <td>${address.postCode}</td>
+      <td>${address.country}</td>
+      `;
 
-    newTableBody.appendChild(newRowAddress);
+      newTableBody.appendChild(newRowAddress);
+
+    })
+
     newRowHead.appendChild(newRowHeader);
     newTable.appendChild(newRowHead);
     newTable.appendChild(newTableBody);
@@ -159,17 +164,18 @@ class UI {
     const form = $(".more-fields");
     const group = create("div");
     const id = Contacts.id();
-    group.className = `address mt-5`;
+    group.className = `address-group mt-5`;
     group.innerHTML = `
     <h4>Address</h4>
-    <input type="hidden" id="address-id" name="addressId" value="${id}">
+    <input type="hidden" id="address-id-${id}" name="addressId" value="${id}">
     `;
     for (const key in addressFormData) {
       const fieldsGroup = create("div");
       fieldsGroup.className = "form-group mb-3";
+      // fieldsGroup.id = `address-id`;
       fieldsGroup.innerHTML = `
         <label for="${addressFormData[key][1]}" class="form-label">${addressFormData[key][0]}</label>
-        <input type="${addressFormData[key][2]}" class="form-control" id="${addressFormData[key][1]}" name="${addressFormData[key][1]}" value></input>
+        <input type="${addressFormData[key][2]}" class="form-control" id="${addressFormData[key][1]}-${id}" name="${addressFormData[key][1]}" value></input>
         `;
       form.appendChild(group);
       group.appendChild(fieldsGroup);
@@ -197,14 +203,14 @@ class UI {
     const email = ($("#email").value = "");
     const phone = ($("#phone-number").value = "");
 
-    const addressId = ($("#address-id").value = "");
-    const street = ($("#street").value = "");
-    const streetNum = ($("#street-num").value = "");
-    const flatNum = ($("#flat-number").value = "");
-    const city = ($("#city").value = "");
-    const state = ($("#state").value = "");
-    const postCode = ($("#postal-code").value = "");
-    const country = ($("#country").value = "");
+    // const addressId = ($("#address-id").value = "");
+    // const street = ($("#street").value = "");
+    // const streetNum = ($("#street-num").value = "");
+    // const flatNum = ($("#flat-number").value = "");
+    // const city = ($("#city").value = "");
+    // const state = ($("#state").value = "");
+    // const postCode = ($("#postal-code").value = "");
+    // const country = ($("#country").value = "");
   }
 
   static deleteContact(element) {
@@ -275,38 +281,36 @@ $(".contact-form").addEventListener("submit", (event) => {
   const dialCode = $(".iti__selected-dial-code").textContent;
   const flagCode = $(".iti__selected-flag").children[0].className;
 
-  const addressId = $("#address-id").value;
-  const street = $("#street").value;
-  const streetNum = $("#street-num").value;
-  const flatNum = $("#flat-number").value;
-  const city = $("#city").value;
-  const state = $("#state").value;
-  const postCode = $("#postal-code").value;
-  const country = $("#country").value;
+const addresses= [];
 
-  let addresses = [
-    {
-      id: addressId,
-      street: street,
-      streetNum: streetNum,
-      flatNum: flatNum,
-      city: city,
-      state: state,
-      postCode: postCode,
-      country: country,
-    }
-  ];
+  $(".more-fields").querySelectorAll(`.address-group`).forEach(addressDiv => {
+    const addressId = addressDiv.querySelector("[id^=address-id]").value;
+    const street = addressDiv.querySelector(`[name=street]`).value;
+    const streetNum = addressDiv.querySelector(`[name=street-num]`).value;
+    const flatNum = addressDiv.querySelector(`[name=flat-number]`).value;
+    const city = addressDiv.querySelector(`[name=city]`).value;
+    const state = addressDiv.querySelector(`[name=state]`).value;
+    const postCode = addressDiv.querySelector(`[name=postal-code]`).value;
+    const country = addressDiv.querySelector(`[name=country]`).value;
 
-  // let address = {
-  //   addressId: addressId,
-  //   street: street,
-  //   streetNum: streetNum,
-  //   flatNum: flatNum,
-  //   city: city,
-  //   state: state,
-  //   postCode: postCode,
-  //   country: country,
-  // };
+    addresses.push( 
+      {
+        id: addressId,
+        street: street,
+        streetNum: streetNum,
+        flatNum: flatNum,
+        city: city,
+        state: state,
+        postCode: postCode,
+        country: country,
+      }
+    )
+    
+  })
+
+  console.log(addresses)
+
+
   
   //Form validation
   if (firstName === "" || lastName === "" || email === "" || phone === "") {
@@ -453,7 +457,18 @@ let addresses = [
     state: "state",
     postCode: "16-234",
     country: "poland",
+  },
+
+  {
+    id: 2,
+    street: "odolanska",
+    streetNum: 5,
+    flatNum: "",
+    city: "Warszawa",
+    state: "state",
+    postCode: "16-234",
+    country: "poland",
   }
 ];
 
-console.log(addresses[0].street)
+// console.log(addresses.forEach((address, index) => {console.log(address)}))
