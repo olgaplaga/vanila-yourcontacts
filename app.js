@@ -29,7 +29,7 @@ class Contacts {
     flagCode,
     dialCode,
     phone,
-    address
+    addresses = []
   ) {
     this.id = id || Contacts.id();
     this.firstName = firstName;
@@ -38,7 +38,7 @@ class Contacts {
     this.flagCode = flagCode;
     this.dialCode = dialCode;
     this.phone = phone;
-    this.address = address;
+    this.addresses = addresses;
   }
 
   // see: https://gist.github.com/jsmithdev/1f31f9f3912d40f6b60bdc7e8098ee9f
@@ -76,7 +76,6 @@ class UI {
     contacts.forEach((contact) => {
       UI.addContactToList(contact);
       UI.addAddressToList(contact);
-      console.log(contacts);
     });
   }
 
@@ -102,8 +101,6 @@ class UI {
   // see : https://getbootstrap.com/docs/5.1/content/tables/#nesting
 
   static addAddressToList(contact) {
-    console.log("contact:", contact);
-
     const oldTableBody = $("#contact-list");
     const oldRow = $(`#contact-id-${contact.id}`);
     const newRow = create("tr");
@@ -114,12 +111,12 @@ class UI {
     const newTableBody = create("tbody");
 
     const newRowAddress = create("tr");
-    newRowHeader.className = "table-secondary"
-    newRowAddress.id = `address-id-${contact.address.addressId}`;
+    newRowHeader.className = "table-secondary";
+    newRowAddress.id = `address-id-${contact.addresses[0].id}`;
     newTable.className = "table mt-2 mb-2";
     newData.setAttribute("colspan", "6");
-    (newRow.className = "address-removed");
-    newRow.id = `address-container-contact-id-${contact.id}`
+    newRow.className = "address-removed";
+    newRow.id = `address-container-contact-id-${contact.id}`;
 
     newRowHeader.innerHTML = `
     <th>Street</th>
@@ -132,13 +129,13 @@ class UI {
     `;
 
     newRowAddress.innerHTML = `
-    <td>${contact.address.street}</td>
-    <td>${contact.address.streetNum}</td>
-    <td>${contact.address.flatNum}</td>
-    <td>${contact.address.city}</td>
-    <td>${contact.address.state}</td>
-    <td>${contact.address.postCode}</td>
-    <td>${contact.address.country}</td>
+    <td>${contact.addresses[0].street}</td>
+    <td>${contact.addresses[0].streetNum}</td>
+    <td>${contact.addresses[0].flatNum}</td>
+    <td>${contact.addresses[0].city}</td>
+    <td>${contact.addresses[0].state}</td>
+    <td>${contact.addresses[0].postCode}</td>
+    <td>${contact.addresses[0].country}</td>
     `;
 
     newTableBody.appendChild(newRowAddress);
@@ -148,7 +145,6 @@ class UI {
     newData.appendChild(newTable);
     newRow.appendChild(newData);
     oldTableBody.insertBefore(newRow, oldRow.nextSibling);
-  
   }
 
   static toggleAddress(address) {
@@ -156,25 +152,17 @@ class UI {
       address.className = "address-removed";
     } else {
       address.className = "address-added";
-    };
-
-  };
-
-  // static toggleBtnCollor(button){
-  //   if (button.classList[2] === "text-info") {
-  //     button.classList[2] === "text-danger"
-  //   } else {
-  //     button.classList[2] === "text-danger"
-  //   }
-  // }
+    }
+  }
 
   static addAddressForm() {
     const form = $(".more-fields");
     const group = create("div");
+    const id = Contacts.id();
     group.className = `address mt-5`;
     group.innerHTML = `
     <h4>Address</h4>
-    <input type="hidden" id="address-id" name="id" value="${Contacts.id()}">
+    <input type="hidden" id="address-id" name="addressId" value="${id}">
     `;
     for (const key in addressFormData) {
       const fieldsGroup = create("div");
@@ -280,14 +268,13 @@ document.addEventListener("DOMContentLoaded", UI.displayContacts);
 $(".contact-form").addEventListener("submit", (event) => {
   event.preventDefault();
   const contactId = $("#contact-id").value;
-  const firstName = $("#first-name").value;
+  const firstName = $("#first-name").value;  
   const lastName = $("#last-name").value;
   const email = $("#email").value;
   const phone = $("#phone-number").value;
   const dialCode = $(".iti__selected-dial-code").textContent;
   const flagCode = $(".iti__selected-flag").children[0].className;
 
-  //nie dziala address-id
   const addressId = $("#address-id").value;
   const street = $("#street").value;
   const streetNum = $("#street-num").value;
@@ -297,17 +284,30 @@ $(".contact-form").addEventListener("submit", (event) => {
   const postCode = $("#postal-code").value;
   const country = $("#country").value;
 
-  let address = {
-    addressId: addressId,
-    street: street,
-    streetNum: streetNum,
-    flatNum: flatNum,
-    city: city,
-    state: state,
-    postCode: postCode,
-    country: country,
-  };
+  let addresses = [
+    {
+      id: addressId,
+      street: street,
+      streetNum: streetNum,
+      flatNum: flatNum,
+      city: city,
+      state: state,
+      postCode: postCode,
+      country: country,
+    }
+  ];
 
+  // let address = {
+  //   addressId: addressId,
+  //   street: street,
+  //   streetNum: streetNum,
+  //   flatNum: flatNum,
+  //   city: city,
+  //   state: state,
+  //   postCode: postCode,
+  //   country: country,
+  // };
+  
   //Form validation
   if (firstName === "" || lastName === "" || email === "" || phone === "") {
     UI.showAlert("Please fill all fields", "primary");
@@ -320,7 +320,7 @@ $(".contact-form").addEventListener("submit", (event) => {
       flagCode,
       dialCode,
       phone,
-      address
+      addresses,
     );
     if (contactId) {
       UI.editContactInList(contact);
@@ -334,6 +334,7 @@ $(".contact-form").addEventListener("submit", (event) => {
       //change back row style
       $(`#contact-id-${contactId}`).className = "table";
     } else {
+      console.log(contact)
       UI.addContactToList(contact);
       UI.addAddressToList(contact);
       Store.addContact(contact);
@@ -425,41 +426,34 @@ $("#contact-list").addEventListener("click", (event) => {
     //three dots more button
   } else if (event.target.id && event.target.id.indexOf("btn-more-") === 0) {
     event.preventDefault();
-    const button = event.target
-    
-    
-    const id = event.target.id.slice(9)
-    const address = $(`#address-container-contact-id-${id}`);
-    UI.toggleAddress(address)
-    
+    const button = event.target;
 
+    const id = event.target.id.slice(9);
+    const address = $(`#address-container-contact-id-${id}`);
+    UI.toggleAddress(address);
   }
 });
 
-// console.log(event.target.className)
-// const id = event.target.id.slice(9);
-// const contact = Store.getContactById(id);
 
-// UI.addAddressToList(contact);
-
-// } else if(event.target.id &&
-// event.target.className = "btn text-danger bi bi-three-dots";
-//   event.target.id.indexOf("btn-more-") === 0 &&
-
-// event.target.className == "btn text-info bi bi-three-dots")
-//   event.target.classList === "btn text-danger bi bi-three-dots") {
-//     console.log("event.target:", event.target)
-
-// }
-// const address = $(".add-address")
-// console.log("address:", address)
-// // UI.removeAddressFromList(address)
-// address.style.display = "none"
-
-// }
 
 //Add address form
 $("#more-btn").addEventListener("click", (event) => {
   event.preventDefault();
   UI.addAddressForm();
 });
+
+
+let addresses = [
+  {
+    id: 1,
+    street: "filipowska",
+    streetNum: 5,
+    flatNum: "",
+    city: "bakalarzewo",
+    state: "state",
+    postCode: "16-234",
+    country: "poland",
+  }
+];
+
+console.log(addresses[0].street)
