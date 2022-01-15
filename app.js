@@ -109,14 +109,15 @@ class UI {
     const newRowHead = create("thead");
     const newRowHeader = create("tr");
     const newTableBody = create("tbody");
-
+    
+    newRow.id = `address-container-contact-id-${contact.id}`;
+    newRow.className = "address-removed";
     newRowHeader.className = "table-secondary";
     newTable.className = "table mt-2 mb-2";
     newData.setAttribute("colspan", "6");
-    newRow.className = "address-added";
-    newRow.id = `address-container-contact-id-${contact.id}`;
     
     newRowHeader.innerHTML = `
+    <th>Place</th>
     <th>Street</th>
     <th>No.</th>
     <th>Flat</th>
@@ -129,9 +130,8 @@ class UI {
     contact.addresses.forEach((address) => {
       const newRowAddress = create("tr");
       newRowAddress.id = `address-id-${address.id}`;
-      console.log("newRowAddress:", newRowAddress)
-      
       newRowAddress.innerHTML = `
+      <td>${address.place}</td>
       <td>${address.street}</td>
       <td>${address.streetNum}</td>
       <td>${address.flatNum}</td>
@@ -143,15 +143,12 @@ class UI {
       newTableBody.appendChild(newRowAddress);
 
     })
-    
     newRowHead.appendChild(newRowHeader);
     newTable.appendChild(newRowHead);
     newTable.appendChild(newTableBody);
     newData.appendChild(newTable);
     newRow.appendChild(newData);
     oldTableBody.insertBefore(newRow, oldRow.nextSibling);
-    
-    
   }
 
   static toggleAddress(address) {
@@ -166,11 +163,22 @@ class UI {
     const form = $(".more-fields");
     const group = create("div");
     const id = Contacts.id();
-    group.className = `address-group mt-5`;
+    group.className = `address-group mt-3`;
     group.innerHTML = `
-    <h4>Address</h4>
+    <h4>Address</h4><br>
     <input type="hidden" id="address-id-${id}" name="addressId" value="${id}">
+    <div class="form-group mb-3">
+     <label>Address of:
+      <input type="text" id="place-id-${id}" class="form-control" list="places" name="place" placeholder="Choose or type"></label>
+      <datalist id="places">
+        <option value="Home">
+         <option value="Work">
+         <option value="School">
+         <option value="Psychoteraphy">
+       </datalist>
+      </div>
     `;
+    
     for (const key in addressFormData) {
       const fieldsGroup = create("div");
       fieldsGroup.className = "form-group mb-3";
@@ -179,10 +187,11 @@ class UI {
         <label for="${addressFormData[key][1]}" class="form-label">${addressFormData[key][0]}</label>
         <input type="${addressFormData[key][2]}" class="form-control" id="${addressFormData[key][1]}-${id}" name="${addressFormData[key][1]}" value></input>
         `;
-      form.appendChild(group);
-      group.appendChild(fieldsGroup);
+      form.insertBefore(group, form.children[0]);
+      group.appendChild(fieldsGroup);      
     }
   }
+
 
   static editContactInList(newContact) {
     const contacts = Store.getContacts();
@@ -205,18 +214,26 @@ class UI {
     const email = ($("#email").value = "");
     const phone = ($("#phone-number").value = "");
 
-    // const addressId = ($("#address-id").value = "");
-    // const street = ($("#street").value = "");
-    // const streetNum = ($("#street-num").value = "");
-    // const flatNum = ($("#flat-number").value = "");
-    // const city = ($("#city").value = "");
-    // const state = ($("#state").value = "");
-    // const postCode = ($("#postal-code").value = "");
-    // const country = ($("#country").value = "");
-  }
+    $(".more-fields").querySelectorAll(`.address-group`).forEach(addressDiv => {
+      const addressId = addressDiv.querySelector("[id^=address-id]").value = "";
+      const place = addressDiv.querySelector("[name=place]").value = "";
+      const street = addressDiv.querySelector(`[name=street]`).value = ""
+      const streetNum = addressDiv.querySelector(`[name=street-num]`).value = "";
+      const flatNum = addressDiv.querySelector(`[name=flat-number]`).value = "";
+      const city = addressDiv.querySelector(`[name=city]`).value = "";
+      const state = addressDiv.querySelector(`[name=state]`).value = "";
+      const postCode = addressDiv.querySelector(`[name=postal-code]`).value = "";
+      const country = addressDiv.querySelector(`[name=country]`).value = "";
+  })}
 
   static deleteContact(element) {
+    element.parentElement.parentElement.nextSibling.remove()
     element.parentElement.parentElement.remove();
+  }
+
+  static deleteaAddressForm(addressForm) {
+    addressForm.remove();
+
   }
 
   static showAlert(message, className) {
@@ -287,6 +304,7 @@ const addresses= [];
 
   $(".more-fields").querySelectorAll(`.address-group`).forEach(addressDiv => {
     const addressId = addressDiv.querySelector("[id^=address-id]").value;
+    const place = addressDiv.querySelector("[name=place]").value;    
     const street = addressDiv.querySelector(`[name=street]`).value;
     const streetNum = addressDiv.querySelector(`[name=street-num]`).value;
     const flatNum = addressDiv.querySelector(`[name=flat-number]`).value;
@@ -298,6 +316,7 @@ const addresses= [];
     addresses.push( 
       {
         id: addressId,
+        place: place, 
         street: street,
         streetNum: streetNum,
         flatNum: flatNum,
@@ -307,12 +326,7 @@ const addresses= [];
         country: country,
       }
     )
-    
   })
-
-  // console.log(addresses)
-
-
   
   //Form validation
   if (firstName === "" || lastName === "" || email === "" || phone === "") {
@@ -448,29 +462,9 @@ $("#more-btn").addEventListener("click", (event) => {
   UI.addAddressForm();
 });
 
+$('#less-btn').addEventListener("click", (event) => {
+  event.preventDefault();
+  const addressForm = $(".more-fields").children[0]
+  UI.deleteaAddressForm(addressForm)
+})
 
-let addresses = [
-  {
-    id: 1,
-    street: "filipowska",
-    streetNum: 5,
-    flatNum: "",
-    city: "bakalarzewo",
-    state: "state",
-    postCode: "16-234",
-    country: "poland",
-  },
-
-  {
-    id: 2,
-    street: "odolanska",
-    streetNum: 5,
-    flatNum: "",
-    city: "Warszawa",
-    state: "state",
-    postCode: "16-234",
-    country: "poland",
-  }
-];
-
-// console.log(addresses.forEach((address, index) => {console.log(address)}))
