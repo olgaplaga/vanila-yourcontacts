@@ -110,7 +110,6 @@ class UI {
     const newRowHeader = create("tr");
     const newTableBody = create("tbody");
 
-    const newRowAddress = create("tr");
     newRowHeader.className = "table-secondary";
     newTable.className = "table mt-2 mb-2";
     newData.setAttribute("colspan", "6");
@@ -128,8 +127,10 @@ class UI {
     `;
     
     contact.addresses.forEach((address) => {
-
+      const newRowAddress = create("tr");
       newRowAddress.id = `address-id-${address.id}`;
+      console.log("newRowAddress:", newRowAddress)
+      
       newRowAddress.innerHTML = `
       <td>${address.street}</td>
       <td>${address.streetNum}</td>
@@ -139,17 +140,18 @@ class UI {
       <td>${address.postCode}</td>
       <td>${address.country}</td>
       `;
-
       newTableBody.appendChild(newRowAddress);
 
     })
-
+    
     newRowHead.appendChild(newRowHeader);
     newTable.appendChild(newRowHead);
     newTable.appendChild(newTableBody);
     newData.appendChild(newTable);
     newRow.appendChild(newData);
     oldTableBody.insertBefore(newRow, oldRow.nextSibling);
+    
+    
   }
 
   static toggleAddress(address) {
@@ -308,7 +310,7 @@ const addresses= [];
     
   })
 
-  console.log(addresses)
+  // console.log(addresses)
 
 
   
@@ -338,7 +340,7 @@ const addresses= [];
       //change back row style
       $(`#contact-id-${contactId}`).className = "table";
     } else {
-      console.log(contact)
+      // console.log(contact)
       UI.addContactToList(contact);
       UI.addAddressToList(contact);
       Store.addContact(contact);
