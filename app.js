@@ -115,6 +115,7 @@ class UI {
     newRowHeader.className = "table-secondary";
     newTable.className = "table mt-2 mb-2";
     newData.setAttribute("colspan", "6");
+    newTableBody.className = "address-table"
 
     newRowHeader.innerHTML = `
     <th>Place</th>
@@ -202,6 +203,19 @@ class UI {
     contactRow.children[1].innerText = newContact.lastName;
     contactRow.children[2].innerText = newContact.email;
     contactRow.children[3].innerText = `${newContact.dialCode} ${newContact.phone}`;
+
+    const addressDiv = $(`#address-container-contact-id-${newContact.id}`)
+    const addressRow = addressDiv.querySelector(".address-table").querySelectorAll("[id^=address-id]")
+    addressRow.forEach(address => {
+      address.children[0].innerText = newContact.addresses.place
+      address.children[1].innerText = newContact.addresses.street
+      address.children[2].innerText = newContact.addresses.streetNum
+      address.children[3].innerText = newContact.addresses.flatNum
+      address.children[4].innerText = newContact.addresses.city
+      address.children[5].innerText = newContact.addresses.state
+      address.children[6].innerText = newContact.addresses.postCode
+      address.children[7].innerText = newContact.addresses.country
+    })
   }
 
   static clearFields() {
