@@ -109,13 +109,13 @@ class UI {
     const newRowHead = create("thead");
     const newRowHeader = create("tr");
     const newTableBody = create("tbody");
-    
+
     newRow.id = `address-container-contact-id-${contact.id}`;
     newRow.className = "address-removed";
     newRowHeader.className = "table-secondary";
     newTable.className = "table mt-2 mb-2";
     newData.setAttribute("colspan", "6");
-    
+
     newRowHeader.innerHTML = `
     <th>Place</th>
     <th>Street</th>
@@ -126,7 +126,7 @@ class UI {
     <th>Post Code</th>
     <th>Country</th>
     `;
-    
+
     contact.addresses.forEach((address) => {
       const newRowAddress = create("tr");
       newRowAddress.id = `address-id-${address.id}`;
@@ -141,8 +141,7 @@ class UI {
       <td>${address.country}</td>
       `;
       newTableBody.appendChild(newRowAddress);
-
-    })
+    });
     newRowHead.appendChild(newRowHeader);
     newTable.appendChild(newRowHead);
     newTable.appendChild(newTableBody);
@@ -178,20 +177,18 @@ class UI {
        </datalist>
       </div>
     `;
-    
+
     for (const key in addressFormData) {
       const fieldsGroup = create("div");
       fieldsGroup.className = "form-group mb-3";
-      // fieldsGroup.id = `address-id`;
       fieldsGroup.innerHTML = `
         <label for="${addressFormData[key][1]}" class="form-label">${addressFormData[key][0]}</label>
         <input type="${addressFormData[key][2]}" class="form-control" id="${addressFormData[key][1]}-${id}" name="${addressFormData[key][1]}" value></input>
         `;
-      form.insertBefore(group, form.children[0]);
-      group.appendChild(fieldsGroup);      
+      form.prepend(group);
+      group.appendChild(fieldsGroup);
     }
   }
-
 
   static editContactInList(newContact) {
     const contacts = Store.getContacts();
@@ -214,26 +211,32 @@ class UI {
     const email = ($("#email").value = "");
     const phone = ($("#phone-number").value = "");
 
-    $(".more-fields").querySelectorAll(`.address-group`).forEach(addressDiv => {
-      const addressId = addressDiv.querySelector("[id^=address-id]").value = "";
-      const place = addressDiv.querySelector("[name=place]").value = "";
-      const street = addressDiv.querySelector(`[name=street]`).value = ""
-      const streetNum = addressDiv.querySelector(`[name=street-num]`).value = "";
-      const flatNum = addressDiv.querySelector(`[name=flat-number]`).value = "";
-      const city = addressDiv.querySelector(`[name=city]`).value = "";
-      const state = addressDiv.querySelector(`[name=state]`).value = "";
-      const postCode = addressDiv.querySelector(`[name=postal-code]`).value = "";
-      const country = addressDiv.querySelector(`[name=country]`).value = "";
-  })}
+    $(".more-fields")
+      .querySelectorAll(`.address-group`)
+      .forEach((addressDiv) => {
+        const addressId = (addressDiv.querySelector("[id^=address-id]").value =
+          "");
+        const place = (addressDiv.querySelector("[name=place]").value = "");
+        const street = (addressDiv.querySelector(`[name=street]`).value = "");
+        const streetNum = (addressDiv.querySelector(`[name=street-num]`).value =
+          "");
+        const flatNum = (addressDiv.querySelector(`[name=flat-number]`).value =
+          "");
+        const city = (addressDiv.querySelector(`[name=city]`).value = "");
+        const state = (addressDiv.querySelector(`[name=state]`).value = "");
+        const postCode = (addressDiv.querySelector(`[name=postal-code]`).value =
+          "");
+        const country = (addressDiv.querySelector(`[name=country]`).value = "");
+      });
+  }
 
   static deleteContact(element) {
-    element.parentElement.parentElement.nextSibling.remove()
+    element.parentElement.parentElement.nextSibling.remove();
     element.parentElement.parentElement.remove();
   }
 
   static deleteaAddressForm(addressForm) {
     addressForm.remove();
-
   }
 
   static showAlert(message, className) {
@@ -293,30 +296,31 @@ document.addEventListener("DOMContentLoaded", UI.displayContacts);
 $(".contact-form").addEventListener("submit", (event) => {
   event.preventDefault();
   const contactId = $("#contact-id").value;
-  const firstName = $("#first-name").value;  
+  const firstName = $("#first-name").value;
   const lastName = $("#last-name").value;
   const email = $("#email").value;
   const phone = $("#phone-number").value;
   const dialCode = $(".iti__selected-dial-code").textContent;
   const flagCode = $(".iti__selected-flag").children[0].className;
 
-const addresses= [];
+  const addresses = [];
 
-  $(".more-fields").querySelectorAll(`.address-group`).forEach(addressDiv => {
-    const addressId = addressDiv.querySelector("[id^=address-id]").value;
-    const place = addressDiv.querySelector("[name=place]").value;    
-    const street = addressDiv.querySelector(`[name=street]`).value;
-    const streetNum = addressDiv.querySelector(`[name=street-num]`).value;
-    const flatNum = addressDiv.querySelector(`[name=flat-number]`).value;
-    const city = addressDiv.querySelector(`[name=city]`).value;
-    const state = addressDiv.querySelector(`[name=state]`).value;
-    const postCode = addressDiv.querySelector(`[name=postal-code]`).value;
-    const country = addressDiv.querySelector(`[name=country]`).value;
+  $(".more-fields")
+    .querySelectorAll(`.address-group`)
+    .forEach((addressDiv) => {
+      const addressId = addressDiv.querySelector("[id^=address-id]").value;
+      const place = addressDiv.querySelector("[name=place]").value;
+      const street = addressDiv.querySelector(`[name=street]`).value;
+      const streetNum = addressDiv.querySelector(`[name=street-num]`).value;
+      const flatNum = addressDiv.querySelector(`[name=flat-number]`).value;
+      const city = addressDiv.querySelector(`[name=city]`).value;
+      const state = addressDiv.querySelector(`[name=state]`).value;
+      const postCode = addressDiv.querySelector(`[name=postal-code]`).value;
+      const country = addressDiv.querySelector(`[name=country]`).value;
 
-    addresses.push( 
-      {
+      addresses.push({
         id: addressId,
-        place: place, 
+        place: place,
         street: street,
         streetNum: streetNum,
         flatNum: flatNum,
@@ -324,10 +328,9 @@ const addresses= [];
         state: state,
         postCode: postCode,
         country: country,
-      }
-    )
-  })
-  
+      });
+    });
+
   //Form validation
   if (firstName === "" || lastName === "" || email === "" || phone === "") {
     UI.showAlert("Please fill all fields", "primary");
@@ -340,7 +343,7 @@ const addresses= [];
       flagCode,
       dialCode,
       phone,
-      addresses,
+      addresses
     );
     if (contactId) {
       UI.editContactInList(contact);
@@ -354,13 +357,16 @@ const addresses= [];
       //change back row style
       $(`#contact-id-${contactId}`).className = "table";
     } else {
-      // console.log(contact)
       UI.addContactToList(contact);
       UI.addAddressToList(contact);
       Store.addContact(contact);
       UI.showAlert("Contact Added!", "success");
     }
     UI.clearFields();
+    // if ($(".more-fields")) {
+    Array.from($(".more-fields").children).forEach((addressDiv) => {
+      UI.deleteaAddressForm(addressDiv);
+    });
   }
 });
 
@@ -417,6 +423,7 @@ $("#contact-list").addEventListener("click", (event) => {
     $(`#contact-id-${contact.id}`).className = "table table-primary";
 
     //push this data to the form fields for edition
+    
     $("#contact-id").value = contact.id;
     $("#first-name").value = contact.firstName;
     $("#last-name").value = contact.lastName;
@@ -424,6 +431,22 @@ $("#contact-list").addEventListener("click", (event) => {
     $("#phone-number").value = contact.phone;
     $(".iti__selected-dial-code").textContent = contact.dialCode;
     $(".iti__selected-flag").children[0].className = contact.flagCode;
+
+    // console.log(contact)
+    contact.addresses.forEach(address => {
+      UI.addAddressForm()
+      console.log(address)
+      $("[id^=address-id]").value = address.id
+      $("[name=place]").value = address.place
+      $(`[name=street]`).value = address.street
+      $(`[name=street-num]`).value = address.streetNum
+      $(`[name=flat-number]`).value = address.flatNum
+      $(`[name=city]`).value = address.city
+      $(`[name=state]`).value = address.state
+      $(`[name=postal-code]`).value = address.postCode
+      $(`[name=country]`).value = address.country
+
+    })
 
     //change button name
     $(".submit-btn").classList = "btn btn-block btn-info submit-btn";
@@ -446,25 +469,22 @@ $("#contact-list").addEventListener("click", (event) => {
     //three dots more button
   } else if (event.target.id && event.target.id.indexOf("btn-more-") === 0) {
     event.preventDefault();
-    const button = event.target;
-
     const id = event.target.id.slice(9);
     const address = $(`#address-container-contact-id-${id}`);
     UI.toggleAddress(address);
   }
 });
 
-
-
-//Add address form
+//Add and remove address form from display
 $("#more-btn").addEventListener("click", (event) => {
   event.preventDefault();
   UI.addAddressForm();
 });
 
-$('#less-btn').addEventListener("click", (event) => {
+$("#less-btn").addEventListener("click", (event) => {
   event.preventDefault();
-  const addressForm = $(".more-fields").children[0]
-  UI.deleteaAddressForm(addressForm)
-})
-
+  const addressForm = $(".more-fields").children[0];
+  if (addressForm) {
+    UI.deleteaAddressForm(addressForm);
+  }
+});
