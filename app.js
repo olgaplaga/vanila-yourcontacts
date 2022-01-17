@@ -115,6 +115,7 @@ class UI {
     newRowHeader.className = "table-secondary";
     newTable.className = "table mt-2 mb-2";
     newData.setAttribute("colspan", "6");
+    newData.className = ("table-secondary")
     newTableBody.className = "address-table"
 
     newRowHeader.innerHTML = `
@@ -143,6 +144,7 @@ class UI {
       `;
       newTableBody.appendChild(newRowAddress);
     });
+
     newRowHead.appendChild(newRowHeader);
     newTable.appendChild(newRowHead);
     newTable.appendChild(newTableBody);
@@ -167,9 +169,10 @@ class UI {
     group.innerHTML = `
     <h4>Address</h4><br>
     <input type="hidden" id="address-id-${id}" name="addressId" value="${id}">
-    <div class="form-group mb-3">
-     <label>Address of:
-      <input type="text" id="place-id-${id}" class="form-control" list="places" name="place" placeholder="Choose or type"></label>
+    <div class="form-group mb-3 btn-del-container">
+     <span><label>Address of:
+      <input type="text" id="place-id-${id}" class="form-control" list="places" name="place" placeholder="Choose or type"></label></span>
+      <span><i id="remove-address-${id}" title="Delete" class="bi bi-trash btn btn-primary btn-xs delete position-static"></i></span>
       <datalist id="places">
         <option value="Home">
          <option value="Work">
@@ -196,26 +199,30 @@ class UI {
     const newContacts = contacts.map((oldContact) =>
       oldContact.id === newContact.id ? newContact : oldContact
     );
+    // console.log(newContacts)
 
-    Store.replaceContacts(newContacts);
     const contactRow = $(`#contact-id-${newContact.id}`);
     contactRow.children[0].innerText = newContact.firstName;
     contactRow.children[1].innerText = newContact.lastName;
     contactRow.children[2].innerText = newContact.email;
     contactRow.children[3].innerText = `${newContact.dialCode} ${newContact.phone}`;
+    
 
-    const addressDiv = $(`#address-container-contact-id-${newContact.id}`)
-    const addressRow = addressDiv.querySelector(".address-table").querySelectorAll("[id^=address-id]")
-    addressRow.forEach(address => {
-      address.children[0].innerText = newContact.addresses.place
-      address.children[1].innerText = newContact.addresses.street
-      address.children[2].innerText = newContact.addresses.streetNum
-      address.children[3].innerText = newContact.addresses.flatNum
-      address.children[4].innerText = newContact.addresses.city
-      address.children[5].innerText = newContact.addresses.state
-      address.children[6].innerText = newContact.addresses.postCode
-      address.children[7].innerText = newContact.addresses.country
+    newContact.addresses.forEach(address => {
+      const addressRow = $(".address-table").querySelector(`#address-id-${address.id}`)
+      addressRow.children[0].innerText = address.place
+        addressRow.children[1].innerText = address.street
+        addressRow.children[2].innerText = address.streetNum
+        addressRow.children[3].innerText = address.flatNum
+        addressRow.children[4].innerText = address.city
+        addressRow.children[5].innerText = address.state
+        addressRow.children[6].innerText = address.postCode
+        addressRow.children[7].innerText = address.country
+      
     })
+   
+    Store.replaceContacts(newContacts);
+
   }
 
   static clearFields() {
@@ -369,7 +376,7 @@ $(".contact-form").addEventListener("submit", (event) => {
       $(`#btn-delete-${contactId}`).removeAttribute("disabled", "false");
 
       //change back row style
-      $(`#contact-id-${contactId}`).className = "table";
+      $(`#contact-id-${contactId}`).className = "";
     } else {
       UI.addContactToList(contact);
       UI.addAddressToList(contact);
@@ -387,7 +394,6 @@ $(".contact-form").addEventListener("submit", (event) => {
 //Restart form button
 $("#restart-form").addEventListener("click", (event) => {
   event.preventDefault();
-
   //restart while submiting
   if (
     event.target.id === "restart-form" &&
@@ -402,12 +408,14 @@ $("#restart-form").addEventListener("click", (event) => {
     $(".submit-btn").textContent === "Update"
   ) {
     const contactId = $("#contact-id").value;
-    $(`#contact-id-${contactId}`).className = "table";
+    $(`#contact-id-${contactId}`).className = "";
     $(`#btn-delete-${contactId}`).removeAttribute("disabled", "false");
     $(".iti__selected-flag").children[0].className = "iti__flag iti__pl";
     $(".iti__selected-dial-code").textContent = "+48";
 
     UI.clearFields();
+    const addressForm = $(".more-fields").children;
+    Array.from(addressForm).forEach(address => UI.deleteaAddressForm(address))
   }
   $(".submit-btn").classList = "btn btn-block btn-warning submit-btn";
   $(".submit-btn").textContent = "Add Contact";
@@ -434,10 +442,9 @@ $("#contact-list").addEventListener("click", (event) => {
     const contact = Store.getContactById(id);
 
     //change row style
-    $(`#contact-id-${contact.id}`).className = "table table-primary";
+    $(`#contact-id-${contact.id}`).className = "table-primary";
 
     //push this data to the form fields for edition
-    
     $("#contact-id").value = contact.id;
     $("#first-name").value = contact.firstName;
     $("#last-name").value = contact.lastName;
@@ -446,10 +453,8 @@ $("#contact-list").addEventListener("click", (event) => {
     $(".iti__selected-dial-code").textContent = contact.dialCode;
     $(".iti__selected-flag").children[0].className = contact.flagCode;
 
-    // console.log(contact)
     contact.addresses.forEach(address => {
       UI.addAddressForm()
-      console.log(address)
       $("[id^=address-id]").value = address.id
       $("[name=place]").value = address.place
       $(`[name=street]`).value = address.street

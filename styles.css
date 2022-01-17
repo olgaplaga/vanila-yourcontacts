@@ -37,6 +37,16 @@
   display: none;
 }
 
+/* [id^="remove-address"] {
+
+
+} */
+.btn-del-container{
+  display: flex;
+  align-items:center;
+  justify-content: space-between;
+}
+
 @keyframes shake {
   10%,
   90% {
