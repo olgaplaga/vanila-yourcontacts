@@ -37,10 +37,26 @@
   display: none;
 }
 
-/* [id^="remove-address"] {
+.trash-hidden{
+  display: none;
+}
 
+.trash-visible {
+  display: compact;
+}
+/* [id^="remove-address"] {
+display: none;
 
 } */
+
+i[class^='trash-hidden']{
+  display: none;
+}
+
+/* i[id^=remove-address] {
+  display: none;
+} */
+
 .btn-del-container{
   display: flex;
   align-items:center;
