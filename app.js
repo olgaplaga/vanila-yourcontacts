@@ -248,33 +248,29 @@ class UI {
   }
 
   static clearFields() {
-    const contactId = ($("#contact-id").value = "");
-    const firstName = ($("#first-name").value = "");
-    const lastName = ($("#last-name").value = "");
-    const email = ($("#email").value = "");
-    const phone = ($("#phone-number").value = "");
-    const gender = $(`[name="gender"]:checked`).checked = false;
-    const traits = document.querySelectorAll(`[name=traits]:checked`).forEach(trait => trait.checked = false);
-    const sympathy = $(`[name=range]`).value = 5.5;
+    ($("#contact-id").value = "");
+    ($("#first-name").value = "");
+    ($("#last-name").value = "");
+    ($("#email").value = "");
+    ($("#phone-number").value = "");
+    $(`[name="gender"]:checked`).checked = false;
+    document.querySelectorAll(`[name=traits]:checked`).forEach(trait => trait.checked = false);
+    $(`[name=range]`).value = 5.5;
     
 
 
     $(".more-fields")
       .querySelectorAll(`.address-group`)
       .forEach((addressDiv) => {
-        const addressId = (addressDiv.querySelector("[id^=address-id-input]").value =
-          "");
-        const place = (addressDiv.querySelector("[name=place]").value = "");
-        const street = (addressDiv.querySelector(`[name=street]`).value = "");
-        const streetNum = (addressDiv.querySelector(`[name=street-num]`).value =
-          "");
-        const flatNum = (addressDiv.querySelector(`[name=flat-number]`).value =
-          "");
-        const city = (addressDiv.querySelector(`[name=city]`).value = "");
-        const state = (addressDiv.querySelector(`[name=state]`).value = "");
-        const postCode = (addressDiv.querySelector(`[name=postal-code]`).value =
-          "");
-        const country = (addressDiv.querySelector(`[name=country]`).value = "");
+        addressDiv.querySelector("[id^=address-id-input]").value = "";
+        addressDiv.querySelector("[name=place]").value = "";
+        addressDiv.querySelector(`[name=street]`).value = "";
+        addressDiv.querySelector(`[name=street-num]`).value = "";
+        addressDiv.querySelector(`[name=flat-number]`).value = "";
+        addressDiv.querySelector(`[name=city]`).value = "";
+        addressDiv.querySelector(`[name=state]`).value = "";
+        addressDiv.querySelector(`[name=postal-code]`).value = "";
+        addressDiv.querySelector(`[name=country]`).value = "";
       });
   }
 
@@ -498,8 +494,13 @@ $("#contact-list").addEventListener("click", (event) => {
     $("#phone-number").value = contact.phone;
     $(".iti__selected-dial-code").textContent = contact.dialCode;
     $(".iti__selected-flag").children[0].className = contact.flagCode;
-    $("[name=gender]").value = contact.gender;
+    $("[name=gender]").checked = contact.gender;
 
+    document.querySelectorAll("[name=traits]").forEach(trait => {
+      if (contact.traits.includes(trait.value)){
+        trait.checked = true
+      }
+    }) 
 
     contact.addresses.forEach((address) => {
       UI.addAddressForm();
