@@ -101,9 +101,6 @@ class UI {
   // see : https://getbootstrap.com/docs/5.1/content/tables/#nesting
 
   static addAddressToList(contact) {
-    const contactId = contact.id
-    console.log(contactId)
-    $("#contact-id")
     const oldTableBody = $("#contact-list");
     const oldRow = $(`#contact-id-${contact.id}`);
     const newRow = create("tr");
@@ -204,35 +201,26 @@ class UI {
   }
 
   static editContactInList(newContact) {
-    console.log("newContact:", newContact.addresses)
-    
-
     const contacts = Store.getContacts();
-    
     const oldContact = contacts.find(oldContact => newContact.id === oldContact.id )
-    console.log("oldContact:", oldContact.addresses)
     oldContact.addresses.forEach((oldAddress) => {
       const oldAddressInNewContactAddresses = newContact.addresses.find(newAddress => oldAddress.id === newAddress.id)
-      console.log("oldAddressInNewContactAddresses:", oldAddressInNewContactAddresses, oldAddress.id)
       if (!oldAddressInNewContactAddresses) {
         $(`#address-id-tr-${oldAddress.id}`).remove();
       }
-      
-
     })
     
-
     const newContacts = contacts.map((oldContact) =>
-      oldContact.id === newContact.id ? newContact : oldContact
+    oldContact.id === newContact.id ? newContact : oldContact
     );
-    // console.log(newContacts)
-
-    const contactRow = $(`#contact-id-${newContact.id}`);
+    
+    const contactRow = $(`#contact-id-${newContact.id}`);    
     contactRow.children[0].innerText = newContact.firstName;
     contactRow.children[1].innerText = newContact.lastName;
     contactRow.children[2].innerText = newContact.email;
     contactRow.children[3].innerText = `${newContact.dialCode} ${newContact.phone}`;
-
+    
+    Store.replaceContacts(newContacts);
     newContact.addresses.forEach((address) => {
       
       
@@ -240,8 +228,6 @@ class UI {
         `#address-id-tr-${address.id}`
         );
       addressRow.children[0].innerText = address.place;   
-      
-
       addressRow.children[1].innerText = address.street;
       addressRow.children[2].innerText = address.streetNum;
       addressRow.children[3].innerText = address.flatNum;
@@ -250,8 +236,6 @@ class UI {
       addressRow.children[6].innerText = address.postCode;
       addressRow.children[7].innerText = address.country;
     });
-
-    Store.replaceContacts(newContacts);
   }
 
   static clearFields() {
@@ -287,10 +271,6 @@ class UI {
 
   static deleteaAddressForm(addressForm) {
     addressForm.remove();
-  }
-
-  static deleteAddressRow(addressRow) {
-    addressRow.remove();
   }
 
   static showAlert(message, className) {
@@ -553,9 +533,7 @@ $(".more-fields").addEventListener("click", (event) => {
 
       const addressForm = $(`#address-group-${id}`)
       UI.deleteaAddressForm(addressForm)
-      // addressRow = 
-      // console.log($(`[id^=address-id-tr-]`))
-      UI.deleteAddressRow(addressRow)
+
 
     }
 
