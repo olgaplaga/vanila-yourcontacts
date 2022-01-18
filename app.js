@@ -31,7 +31,7 @@ class Contacts {
     dialCode,
     phone,
     addresses = [],
-    sex,
+    gender,
     traits = [],
     sympathy,
   ) {
@@ -43,7 +43,7 @@ class Contacts {
     this.dialCode = dialCode;
     this.phone = phone;
     this.addresses = addresses;
-    this.sex = sex;
+    this.gender = gender;
     this.traits = traits;
     this.sympathy = sympathy;
 
@@ -182,7 +182,7 @@ class UI {
     group.className = `address-group mt-3`;
     group.id = `address-group-${id}`
     group.innerHTML = `
-    <h4>Address</h4><br>
+    
     <input type="hidden" id="address-id-input-${id}" name="addressId" value="${id}">
     <div class="form-group mb-3 btn-del-container">
      <span><label>Address of:
@@ -253,7 +253,7 @@ class UI {
     const lastName = ($("#last-name").value = "");
     const email = ($("#email").value = "");
     const phone = ($("#phone-number").value = "");
-    const sex = $(`[name="sex"]:checked`).checked = false;
+    const gender = $(`[name="gender"]:checked`).checked = false;
     const traits = document.querySelectorAll(`[name=traits]:checked`).forEach(trait => trait.checked = false);
     const sympathy = $(`[name=range]`).value = 5.5;
     
@@ -352,8 +352,8 @@ $(".contact-form").addEventListener("submit", (event) => {
   const flagCode = $(".iti__selected-flag").children[0].className;
   const addresses = [];
 
-  const sex = $(`[name=sex]:checked`).value
-  console.log("sex:", sex)
+  const gender = $(`[name=gender]:checked`).value
+  console.log("gender:", gender)
   
   const traits = [];
   document.querySelectorAll(`[name=traits]:checked`).forEach(trait => {
@@ -407,7 +407,7 @@ $(".contact-form").addEventListener("submit", (event) => {
       flagCode,
       dialCode,
       phone,
-      addresses, sex, traits, sympathy,
+      addresses, gender, traits, sympathy,
     );
     if (contactId) {
       UI.addAddressToList(contact)
@@ -498,7 +498,7 @@ $("#contact-list").addEventListener("click", (event) => {
     $("#phone-number").value = contact.phone;
     $(".iti__selected-dial-code").textContent = contact.dialCode;
     $(".iti__selected-flag").children[0].className = contact.flagCode;
-    $("[name=sex]").value = contact.sex;
+    $("[name=gender]").value = contact.gender;
 
 
     contact.addresses.forEach((address) => {
