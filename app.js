@@ -119,6 +119,7 @@ class UI {
     const newRowHeader = create("tr");
     const newTableBody = create("tbody");
 
+
     newRow.id = `address-container-contact-id-${contact.id}`;
     newRow.className = "address-removed";
     newRowHeader.className = "table-secondary";
@@ -136,10 +137,11 @@ class UI {
     <th>State</th>
     <th>Post Code</th>
     <th>Country</th>
+    <th>Gender</th>
+    <th>Traits</th>
     `;
     
     contact.addresses.forEach((address) => {
-      
       newTableBody.id = `address-table-id-${address.id}`
       const newRowAddress = create("tr");
       newRowAddress.id = `address-id-tr-${address.id}`;      
@@ -152,9 +154,12 @@ class UI {
       <td>${address.state}</td>
       <td>${address.postCode}</td>
       <td>${address.country}</td>
+      <td>${contact.gender}</td>
+      <td>${contact.traits.join(', ')}</td>
       `;
       newTableBody.appendChild(newRowAddress);
     });
+      
 
     newRowHead.appendChild(newRowHeader);
     newTable.appendChild(newRowHead);
@@ -521,8 +526,6 @@ $("#contact-list").addEventListener("click", (event) => {
 
     //Unable to delete edited data
     $(`#btn-delete-${contact.id}`).setAttribute("disabled", "true");
-
-  
 
     //edit validation - can not double click edit before updating change
   } else if (
