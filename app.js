@@ -6,6 +6,7 @@ function $(selector) {
   return document.querySelector(selector);
 }
 
+
 //international dial code see : https://www.jqueryscript.net/form/jQuery-International-Telephone-Input-With-Flags-Dial-Codes.html#google_vignette
 const phoneInputField = $("#phone-number");
 const phoneInput = window.intlTelInput(phoneInputField, {
@@ -29,7 +30,10 @@ class Contacts {
     flagCode,
     dialCode,
     phone,
-    addresses = []
+    addresses = [],
+    sex,
+    traits = [],
+    sympathy,
   ) {
     this.id = id || Contacts.id();
     this.firstName = firstName;
@@ -39,6 +43,11 @@ class Contacts {
     this.dialCode = dialCode;
     this.phone = phone;
     this.addresses = addresses;
+    this.sex = sex;
+    this.traits = traits;
+    this.sympathy = sympathy;
+
+
   }
 
   // see: https://gist.github.com/jsmithdev/1f31f9f3912d40f6b60bdc7e8098ee9f
@@ -244,6 +253,11 @@ class UI {
     const lastName = ($("#last-name").value = "");
     const email = ($("#email").value = "");
     const phone = ($("#phone-number").value = "");
+    const sex = $(`[name="sex"]:checked`).checked = false;
+    const traits = document.querySelectorAll(`[name=traits]:checked`).forEach(trait => trait.checked = false);
+    const sympathy = $(`[name=range]`).value = 5.5;
+    
+
 
     $(".more-fields")
       .querySelectorAll(`.address-group`)
@@ -336,8 +350,22 @@ $(".contact-form").addEventListener("submit", (event) => {
   const phone = $("#phone-number").value;
   const dialCode = $(".iti__selected-dial-code").textContent;
   const flagCode = $(".iti__selected-flag").children[0].className;
-
   const addresses = [];
+
+  const sex = $(`[name=sex]:checked`).value
+  console.log("sex:", sex)
+  
+  const traits = [];
+  document.querySelectorAll(`[name=traits]:checked`).forEach(trait => {
+    traits.push(trait.value)
+  })
+  console.log(traits)
+
+  const sympathy = $("[name=range]").value
+  console.log("sympathy:", sympathy)
+  
+
+
 
   $(".more-fields")
     .querySelectorAll(`.address-group`)
@@ -365,6 +393,8 @@ $(".contact-form").addEventListener("submit", (event) => {
       });
     });
 
+
+
   //Form validation
   if (firstName === "" || lastName === "" || email === "" || phone === "") {
     UI.showAlert("Please fill all fields", "primary");
@@ -377,7 +407,7 @@ $(".contact-form").addEventListener("submit", (event) => {
       flagCode,
       dialCode,
       phone,
-      addresses
+      addresses, sex, traits, sympathy,
     );
     if (contactId) {
       UI.addAddressToList(contact)
@@ -468,6 +498,8 @@ $("#contact-list").addEventListener("click", (event) => {
     $("#phone-number").value = contact.phone;
     $(".iti__selected-dial-code").textContent = contact.dialCode;
     $(".iti__selected-flag").children[0].className = contact.flagCode;
+    $("[name=sex]").value = contact.sex;
+
 
     contact.addresses.forEach((address) => {
       UI.addAddressForm();
