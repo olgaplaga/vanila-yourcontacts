@@ -101,6 +101,9 @@ class UI {
   // see : https://getbootstrap.com/docs/5.1/content/tables/#nesting
 
   static addAddressToList(contact) {
+    const contactId = contact.id
+    console.log(contactId)
+    $("#contact-id")
     const oldTableBody = $("#contact-list");
     const oldRow = $(`#contact-id-${contact.id}`);
     const newRow = create("tr");
@@ -117,7 +120,7 @@ class UI {
     newData.setAttribute("colspan", "6");
     newData.className = "table-secondary";
     newTableBody.className = "address-table";
-
+    
     newRowHeader.innerHTML = `
     <th>Place</th>
     <th>Street</th>
@@ -128,10 +131,12 @@ class UI {
     <th>Post Code</th>
     <th>Country</th>
     `;
-
+    
     contact.addresses.forEach((address) => {
+      
+      newTableBody.id = `address-table-id-${address.id}`
       const newRowAddress = create("tr");
-      newRowAddress.id = `address-id-${address.id}`;
+      newRowAddress.id = `address-id-tr-${address.id}`;      
       newRowAddress.innerHTML = `
       <td>${address.place}</td>
       <td>${address.street}</td>
@@ -150,7 +155,9 @@ class UI {
     newTable.appendChild(newTableBody);
     newData.appendChild(newTable);
     newRow.appendChild(newData);
+    
     oldTableBody.insertBefore(newRow, oldRow.nextSibling);
+
   }
 
   static toggleAddress(address) {
@@ -165,14 +172,16 @@ class UI {
     const form = $(".more-fields");
     const group = create("div");
     const id = Contacts.id();
+
     group.className = `address-group mt-3`;
+    group.id = `address-group-${id}`
     group.innerHTML = `
     <h4>Address</h4><br>
-    <input type="hidden" id="address-id-${id}" name="addressId" value="${id}">
+    <input type="hidden" id="address-id-input-${id}" name="addressId" value="${id}">
     <div class="form-group mb-3 btn-del-container">
      <span><label>Address of:
       <input type="text" id="place-id-${id}" class="form-control" list="places" name="place" placeholder="Choose or type"></label></span>
-      <span><i id="remove-address-${id}" name="remove-address" title="Delete" class="trash-hidden bi bi-trash btn btn-primary btn-xs"></i></span>
+      <span><i id="remove-address-${id}" name="remove-address" data-address-id="${id}" title="Delete" class=" bi bi-trash btn btn-primary btn-xs"></i></span>
       <datalist id="places">
         <option value="Home">
          <option value="Work">
@@ -195,7 +204,24 @@ class UI {
   }
 
   static editContactInList(newContact) {
+    console.log("newContact:", newContact.addresses)
+    
+
     const contacts = Store.getContacts();
+    
+    const oldContact = contacts.find(oldContact => newContact.id === oldContact.id )
+    console.log("oldContact:", oldContact.addresses)
+    oldContact.addresses.forEach((oldAddress) => {
+      const oldAddressInNewContactAddresses = newContact.addresses.find(newAddress => oldAddress.id === newAddress.id)
+      console.log("oldAddressInNewContactAddresses:", oldAddressInNewContactAddresses, oldAddress.id)
+      if (!oldAddressInNewContactAddresses) {
+        $(`#address-id-tr-${oldAddress.id}`).remove();
+      }
+      
+
+    })
+    
+
     const newContacts = contacts.map((oldContact) =>
       oldContact.id === newContact.id ? newContact : oldContact
     );
@@ -207,16 +233,15 @@ class UI {
     contactRow.children[2].innerText = newContact.email;
     contactRow.children[3].innerText = `${newContact.dialCode} ${newContact.phone}`;
 
-    console.log(newContact.addresses)
     newContact.addresses.forEach((address) => {
-      console.log("address:", address)
       
       
       const addressRow = $(".address-table").querySelector(
-        `#address-id-${address.id}`
+        `#address-id-tr-${address.id}`
         );
-        console.log("addressRow:", addressRow)
-      addressRow.children[0].innerText = address.place;      
+      addressRow.children[0].innerText = address.place;   
+      
+
       addressRow.children[1].innerText = address.street;
       addressRow.children[2].innerText = address.streetNum;
       addressRow.children[3].innerText = address.flatNum;
@@ -239,7 +264,7 @@ class UI {
     $(".more-fields")
       .querySelectorAll(`.address-group`)
       .forEach((addressDiv) => {
-        const addressId = (addressDiv.querySelector("[id^=address-id]").value =
+        const addressId = (addressDiv.querySelector("[id^=address-id-input]").value =
           "");
         const place = (addressDiv.querySelector("[name=place]").value = "");
         const street = (addressDiv.querySelector(`[name=street]`).value = "");
@@ -262,6 +287,10 @@ class UI {
 
   static deleteaAddressForm(addressForm) {
     addressForm.remove();
+  }
+
+  static deleteAddressRow(addressRow) {
+    addressRow.remove();
   }
 
   static showAlert(message, className) {
@@ -333,7 +362,7 @@ $(".contact-form").addEventListener("submit", (event) => {
   $(".more-fields")
     .querySelectorAll(`.address-group`)
     .forEach((addressDiv) => {
-      const addressId = addressDiv.querySelector("[id^=address-id]").value;
+      const addressId = addressDiv.querySelector("[id^=address-id-input]").value;
       const place = addressDiv.querySelector("[name=place]").value;
       const street = addressDiv.querySelector(`[name=street]`).value;
       const streetNum = addressDiv.querySelector(`[name=street-num]`).value;
@@ -373,23 +402,10 @@ $(".contact-form").addEventListener("submit", (event) => {
     if (contactId) {
       UI.addAddressToList(contact)
       UI.editContactInList(contact);
+      // UI.addAddressToList(contact)
       UI.showAlert("Contact Edited!", "info");
       $(".submit-btn").classList = "btn btn-block btn-warning submit-btn";
       $(".submit-btn").textContent = "Add Contact";
-      $("#less-btn").removeAttribute("disabled", "true");
-
-      //add new table row if user clicked more
-
-    
-
-      // contact.addresses.forEach(address => {
-      //   console.log(address.id);
-      //   // console.log((document.querySelectorAll("[name=addressId")))
-      //   console.log($(".more-fields").querySelectorAll("[name=addressId"))
-      // }
-      //   )
-        
-      
 
       // bring back delete after updating
       $(`#btn-delete-${contactId}`).removeAttribute("disabled", "false");
@@ -397,13 +413,12 @@ $(".contact-form").addEventListener("submit", (event) => {
       //change back row style
       $(`#contact-id-${contactId}`).className = "";
     } else {
-      UI.addContactToList(contact);
+      UI.addContactToList(contact)      
       UI.addAddressToList(contact);
       Store.addContact(contact);
       UI.showAlert("Contact Added!", "success");
     }
     UI.clearFields();
-    // if ($(".more-fields")) {
     Array.from($(".more-fields").children).forEach((addressDiv) => {
       UI.deleteaAddressForm(addressDiv);
     });
@@ -476,7 +491,7 @@ $("#contact-list").addEventListener("click", (event) => {
 
     contact.addresses.forEach((address) => {
       UI.addAddressForm();
-      $("[id^=address-id]").value = address.id;
+      $("[id^=address-id-input]").value = address.id;
       $("[name=place]").value = address.place;
       $(`[name=street]`).value = address.street;
       $(`[name=street-num]`).value = address.streetNum;
@@ -494,11 +509,7 @@ $("#contact-list").addEventListener("click", (event) => {
     //Unable to delete edited data
     $(`#btn-delete-${contact.id}`).setAttribute("disabled", "true");
 
-    //show delete address button
-    $("i[name=remove-address]").classList.remove("trash-hidden");
-
-    //unable to click less - (cause it removes form)
-    $("#less-btn").setAttribute("disabled", "true");
+  
 
     //edit validation - can not double click edit before updating change
   } else if (
@@ -507,6 +518,7 @@ $("#contact-list").addEventListener("click", (event) => {
     $(".submit-btn").textContent === "Update"
   ) {
     event.preventDefault();
+    // UI.addAddressToList(contact)
     $(".submit-btn").classList.remove("shake");
     $(".submit-btn").offsetWidth;
     $(".submit-btn").classList.add("shake");
@@ -526,17 +538,25 @@ $("#more-btn").addEventListener("click", (event) => {
   UI.addAddressForm();
 });
 
-$("#less-btn").addEventListener("click", (event) => {
-  event.preventDefault();
-  if ($(".submit-btn").textContent === "Add Contact") {
-    const addressForm = $(".more-fields").children[0];
-    if (addressForm) {
-      UI.deleteaAddressForm(addressForm);
-    }
-  }
-});
 
 $(".more-fields").addEventListener("click", (event) => {
   event.preventDefault();
-  console.log(event);
+  if (
+    event.target.id &&
+    event.target.id.indexOf("remove-address") === 0) {
+      console.log(event.target.dataset.addressId);
+
+      const id = event.target.dataset.addressId
+      console.log("id:", id)
+      console.log(event.target)
+      
+
+      const addressForm = $(`#address-group-${id}`)
+      UI.deleteaAddressForm(addressForm)
+      // addressRow = 
+      // console.log($(`[id^=address-id-tr-]`))
+      UI.deleteAddressRow(addressRow)
+
+    }
+
 });

@@ -49,9 +49,9 @@ display: none;
 
 } */
 
-i[class^='trash-hidden']{
+/* i[class^='trash-hidden']{
   display: none;
-}
+} */
 
 /* i[id^=remove-address] {
   display: none;
